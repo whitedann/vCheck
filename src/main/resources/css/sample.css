@@ -1,0 +1,73 @@
+
+.main-pane {
+
+}
+
+.plate-pane {
+    -fx-border-color: black;
+}
+
+.side-pane {
+    -fx-border-color: black;
+    -fx-background-color: steelblue;
+}
+
+.entry-Labels {
+    -fx-font-weight: bold;
+}
+
+.bottom-pane {
+    -fx-background-color: lightgrey;
+}
+
+#barcodeField {
+    -fx-background-insets: 0 7 4 9, 0, 0, 0;
+    -fx-background-radius: 0;
+    -fx-background-color: aliceblue;
+    -fx-border-color: black;
+    -fx-border-insets: 0 7 4 9, 0, 0, 0;
+}
+
+#customerField {
+    -fx-background-insets: 0 7 4 9, 1 1 1;
+    -fx-background-radius: 0;
+    -fx-background-color: aliceblue;
+    -fx-border-color: black;
+    -fx-border-insets: 0 7 4 9, 0, 0, 0;
+}
+
+#generateButton {
+    -fx-border-color: black;
+    -fx-background-color: dodgerblue;
+    -fx-background-insets: 1px;
+    -fx-border-width: 1px;
+    -fx-border-radius: 50px;
+    -fx-background-radius: 50px;
+}
+
+#generateButton:hover {
+    -fx-background-color: deepskyblue;
+}
+
+#acceptButton {
+    -fx-border-color: black;
+    -fx-background-color: limegreen;
+    -fx-background-insets: 1px;
+}
+
+#acceptButton:hover {
+    -fx-background-color: greenyellow;
+}
+
+
+.menu {
+    -fx-background-color: lightgrey;
+}
+
+.menu > .button {
+    -fx-background-color: lightgrey;
+}
+
+.menu > .button:hover {
+    -fx-text-fill: darkgrey;
+}
