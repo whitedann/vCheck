@@ -5,10 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.elements.Plate96;
-import sample.excelFiles.OutputSheet;
 
 public class Main extends Application {
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -21,10 +20,6 @@ public class Main extends Application {
         primaryStage.setTitle("vCheck");
         primaryStage.setScene(new Scene(root, 700, 500));
         primaryStage.show();
-        OutputSheet out = new OutputSheet();
-        out.setInputFile("/assets/template.xlsx");
-        out.parseResult();
-        out.printResults();
     }
 
 
