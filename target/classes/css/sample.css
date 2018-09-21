@@ -70,3 +70,7 @@
 .menu > .button:hover {
     -fx-text-fill: darkgrey;
 }
+
+.bottom-pane {
+    -fx-font-size: 10px;
+}

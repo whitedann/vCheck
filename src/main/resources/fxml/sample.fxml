@@ -18,6 +18,7 @@
             <Button mnemonicParsing="false" text="Import" />
             <Button mnemonicParsing="false" text="Save File" />
             <Button mnemonicParsing="false" text="Logout" />
+             <Text translateX="300" translateY="5" text="Session: " />
          </children>
       </HBox>
    </top>
@@ -28,8 +29,8 @@
             <TextField fx:id="barcodeField" translateY="5" />
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Customer"/>
             <TextField fx:id="customerField" translateY="5"/>
-            <Button fx:id="generateButton" onAction="#updateStatus" mnemonicParsing="false" translateY="290" translateX="14" text="Merge Results" />
-            <Button fx:id="acceptButton" translateY="295" translateX="28" mnemonicParsing="false" text="Accept" />
+            <Button fx:id="generateButton" onAction="#loadSheet" mnemonicParsing="false" translateY="290" translateX="14" text="Merge Results" />
+            <Button fx:id="acceptButton" onAction="#updateStatus" translateY="295" translateX="38" mnemonicParsing="false" text="Accept" />
          </children>
       </VBox>
    </left>
@@ -37,7 +38,10 @@
       <Pane styleClass="main-pane" layoutX="20" layoutY="20" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane fx:id="plateGrid" styleClass="plate-pane" layoutX="20" layoutY="20" prefHeight="352.0" prefWidth="528.0" />
-            <AnchorPane styleClass="bottom-pane" layoutY="396.0" prefHeight="69.0" prefWidth="568.0" />
+            <AnchorPane styleClass="bottom-pane" layoutY="396.0" prefHeight="69.0" prefWidth="568.0">
+                <HBox fx:id="bottomPane" styleClass="info-Text" translateY="15" translateX="5"/>
+                <HBox fx:id="bottomBPane" styleClass="info-Text" translateY="30" translateX="5"/>
+            </AnchorPane>
          </children>
       </Pane>
    </center>
