@@ -16,9 +16,9 @@
          <children>
             <Button mnemonicParsing="false" text="Settings" />
             <Button mnemonicParsing="false" text="Import" />
-            <Button mnemonicParsing="false" text="Save File" />
+            <Button mnemonicParsing="false" text="Save To..." />
             <Button mnemonicParsing="false" text="Logout" />
-             <Text translateX="300" translateY="5" text="Session: " />
+             <Text fx:id="sessionText" translateX="280" />
          </children>
       </HBox>
    </top>
@@ -29,8 +29,8 @@
             <TextField fx:id="barcodeField" translateY="5" />
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Customer"/>
             <TextField fx:id="customerField" translateY="5"/>
-            <Button fx:id="generateButton" onAction="#loadSheet" mnemonicParsing="false" translateY="290" translateX="14" text="Merge Results" />
-            <Button fx:id="acceptButton" onAction="#updateStatus" translateY="295" translateX="38" mnemonicParsing="false" text="Accept" />
+            <Button fx:id="generateButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="290" translateX="18" text="Import Data" />
+            <Button fx:id="acceptButton" onAction="#phaseThree" translateY="295" translateX="10" mnemonicParsing="false" text="Accept &amp; Save" />
          </children>
       </VBox>
    </left>
