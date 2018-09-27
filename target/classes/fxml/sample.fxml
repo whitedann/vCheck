@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<BorderPane fx:controller="sample.Controller" stylesheets="/css/sample.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:controller="sample.Controller"  fx:id="entirePane" stylesheets="/css/sample.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <top>
       <HBox styleClass="menu" prefHeight="34.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
@@ -26,7 +26,7 @@
       <VBox styleClass="side-pane" prefHeight="366.0" prefWidth="132.0" BorderPane.alignment="CENTER">
          <children>
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Barcode"/>
-            <TextField fx:id="barcodeField" translateY="5" />
+            <TextField fx:id="barcodeField" onAction="#phaseOne" translateY="5" />
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Customer"/>
             <TextField fx:id="customerField" translateY="5"/>
             <Button fx:id="generateButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="290" translateX="18" text="Import Data" />

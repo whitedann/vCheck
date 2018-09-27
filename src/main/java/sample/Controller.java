@@ -15,7 +15,7 @@ import javafx.util.Pair;
 import sample.elements.WellState;
 import sample.excelFiles.OutputSheet;
 
-import java.io.File;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -64,6 +64,7 @@ public class Controller {
 
     /** Data **/
     OutputSheet outputSheet;
+
     private boolean sessionActive;
     private double sessionStartTime;
     private String currentUser, currentPassword;
@@ -74,6 +75,7 @@ public class Controller {
 
     @FXML
     protected void initialize(){
+        outputSheet = new OutputSheet();
         sessionActive = false;
         sessionStartTime = 0;
         sessionText.setText("Current Session: ");
@@ -87,8 +89,8 @@ public class Controller {
         bottomPane.getChildren().add(upThresh);
         bottomBPane.getChildren().add(measuredVol);
 
-        /** Adds Barcode Text Field and Function **/
-        barcodeField.setOnKeyReleased(event -> {
+        /** Adds Barcode Text Field and Function
+        barcodeField.setOnKeyPressed(event -> {
             if(event.getCode() == KeyCode.ENTER){
                 if(barcodeField.getText().matches("[0-9]+") && barcodeField.getText().length() > 8) {
                     double currentTime = System.currentTimeMillis();
@@ -104,7 +106,7 @@ public class Controller {
                 }
             }
         });
-
+        **/
 
         /** Adds plate/well graphic and function **/
         for(int j = 0; j < wells[0].length; j++) {
@@ -125,6 +127,7 @@ public class Controller {
         plateGrid.getChildren().add(focusImage);
     }
 
+    @FXML
     private void login(){
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Login");
@@ -233,7 +236,9 @@ public class Controller {
 
     @FXML
     private void phaseOne() {
-        outputSheet = new OutputSheet();
+        login();
+        validateLogin();
+        /**
         try {
             outputSheet.executePhaseOne();
         } catch (IOException e) {
@@ -243,7 +248,7 @@ public class Controller {
             setStatusOfWells();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }**/
     }
 
 

@@ -79,7 +79,7 @@ public class OutputSheet {
                     bis.close();
                     return;
                 }
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("./cool.xlsx")));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("/Users/dwhite/vCheck1.1/cool.xlsx")));
                 int inByte;
                 while((inByte = bis.read()) != -1)
                     bos.write(inByte);
@@ -112,7 +112,7 @@ public class OutputSheet {
     }
 
     public void downloadSSRSReport(String barcode) throws IOException {
-
+/**
         String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
@@ -144,7 +144,7 @@ public class OutputSheet {
         }
         finally {
             client.close();
-        }
+        } **/
         plateVolumeInfo = new HSSFWorkbook((new FileInputStream(new File("./src/main/resources/assets/plateVolOld.xls"))));
         plateData = plateVolumeInfo.getSheetAt(0);
     }
