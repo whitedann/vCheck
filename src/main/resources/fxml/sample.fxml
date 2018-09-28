@@ -10,17 +10,23 @@
 <?import javafx.scene.text.Text?>
 
 
-<BorderPane fx:controller="sample.Controller"  fx:id="entirePane" stylesheets="/css/sample.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<BorderPane fx:controller="sample.Controller" fx:id="entirePane" stylesheets="/css/sample.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <HBox styleClass="menu" prefHeight="34.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button mnemonicParsing="false" text="Settings" />
-            <Button mnemonicParsing="false" text="Import" />
-            <Button mnemonicParsing="false" text="Save To..." />
-            <Button mnemonicParsing="false" text="Logout" />
-             <Text fx:id="sessionText" translateX="280" />
-         </children>
-      </HBox>
+      <MenuBar styleClass="menu" prefHeight="34.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <Menu text="File">
+            <MenuItem text="Set Default Import Path" onAction="#setImportPath"/>
+            <MenuItem text="Set Default Save Path" onAction="#setSavePath"/>
+             <MenuItem text="Set Default Report Download Location" onAction="#setSSRSpath" />
+             <MenuItem text="Set Default Template Path" onAction="#setTemplatePath" />
+            <MenuItem text="Reset Data" onAction="#resetAll"/>
+            <MenuItem text="Exit" />
+         </Menu>
+         <Menu text="Manual Import"/>
+         <Menu text="Logout"/>
+      </MenuBar>
    </top>
    <left>
       <VBox styleClass="side-pane" prefHeight="366.0" prefWidth="132.0" BorderPane.alignment="CENTER">

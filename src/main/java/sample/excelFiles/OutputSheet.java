@@ -17,11 +17,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.realityforge.sqlserver.ssrs.SSRS;
 import sample.elements.WellState;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,18 +27,28 @@ import java.util.List;
 
 public class OutputSheet {
 
-    private static final String  VOLUME_CHECK_INPUT_PATH = "/Users/dwhite/Downloads/caltech_02682219.csv";
+    private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/Downloads/caltech_02682219.csv";
+    private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/plateVolOld.xls";
+    private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/template.xlsx";
+    private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
+    private String importPath, ssrsReportPath, templatePath, savePath;
 
     private Workbook template, plateVolumeInfo, measuredWorkbook;
     private Sheet topTemplatePage, dataTemplatePage, plateData, measuredDataSheet;
-    double[][] targetVolumes = null;
-    double[][] highEnds = null;
-    double[][] lowEnds = null;
-    double[][] measuredData = null;
-    String[][] wellPositions = null;
-    WellState[][] states = null;
-    private String reportURL;
+    private double[][] targetVolumes = null;
+    private double[][] highEnds = null;
+    private double[][] lowEnds = null;
+    private double[][] measuredData = null;
+    private String[][] wellPositions = null;
+    private WellState[][] states = null;
     private boolean validLogin = true;
+
+    public OutputSheet(){
+        this.importPath = DEFAULT_IMPORT_PATH;
+        this.ssrsReportPath = DEFAULT_SSRSREPORT_PATH;
+        this.templatePath = DEFAULT_TEMPLATE_PATH;
+        this.savePath = DEFAULT_SAVE_PATH;
+    }
 
     public void downloadTemplate(String user, String pass) throws IOException {
         String url = "https://idtdna.mastercontrol.com/mc/login/index.cfm?action=login";
@@ -79,7 +87,7 @@ public class OutputSheet {
                     bis.close();
                     return;
                 }
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("/Users/dwhite/vCheck1.1/cool.xlsx")));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(templatePath)));
                 int inByte;
                 while((inByte = bis.read()) != -1)
                     bos.write(inByte);
@@ -96,8 +104,8 @@ public class OutputSheet {
         }
     }
 
-    private void initializeTemplateFile() throws IOException {
-        File inputFile = new File("./cool.xlsx");
+    public void initializeTemplateFile() throws IOException {
+        File inputFile = new File(templatePath);
         template = new XSSFWorkbook(new FileInputStream(inputFile));
 
         states = new WellState[12][8];
@@ -112,7 +120,7 @@ public class OutputSheet {
     }
 
     public void downloadSSRSReport(String barcode) throws IOException {
-/**
+
         String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
@@ -131,7 +139,7 @@ public class OutputSheet {
                     System.out.println("Could not connect to SSRS");
                     return;
                 }
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("./PLATEVOL.xls")));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(ssrsReportPath)));
                 int inByte;
                 while ((inByte = bis.read()) != -1)
                     bos.write(inByte);
@@ -144,8 +152,8 @@ public class OutputSheet {
         }
         finally {
             client.close();
-        } **/
-        plateVolumeInfo = new HSSFWorkbook((new FileInputStream(new File("./src/main/resources/assets/plateVolOld.xls"))));
+        }
+        plateVolumeInfo = new HSSFWorkbook((new FileInputStream(new File(ssrsReportPath))));
         plateData = plateVolumeInfo.getSheetAt(0);
     }
 
@@ -172,7 +180,7 @@ public class OutputSheet {
     }
 
     private void loadMeasuredDataAndMerge() throws IOException {
-        Reader reader = Files.newBufferedReader(Paths.get(VOLUME_CHECK_INPUT_PATH));
+        Reader reader = Files.newBufferedReader(Paths.get(importPath));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
@@ -225,9 +233,7 @@ public class OutputSheet {
     }
 
     private void saveFinalSheet(String barcode) throws IOException {
-        File currDir = new File(".");
-        String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + barcode + ".xlsx";
+        String fileLocation = savePath + "/" + barcode + ".xlsx";
         BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(fileLocation));
         XSSFFormulaEvaluator.evaluateAllFormulaCells(template);
         template.write(outputStream);
@@ -263,11 +269,11 @@ public class OutputSheet {
         return lowEnds[col][row];
     }
 
-    public void executePhaseOne() throws IOException {
-        File inputFile = new File("./cool.xlsx");
+    public void executePhaseOne(String barcode) throws IOException {
+        File inputFile = new File(templatePath);
         if(inputFile.exists()) {
             initializeTemplateFile();
-            downloadSSRSReport("1212112");
+            downloadSSRSReport(barcode);
             mergeTemplateWithSSRSReport();
             updateWellStates();
         }
@@ -291,4 +297,19 @@ public class OutputSheet {
         return validLogin;
     }
 
+    public void setImportPath(String importPath) {
+        this.importPath = importPath;
+    }
+
+    public void setSsrsReportPath(String ssrsReportPath){
+        this.ssrsReportPath = ssrsReportPath;
+    }
+
+    public void setTemplatePath(String templatePath){
+        this.templatePath = templatePath;
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
 }

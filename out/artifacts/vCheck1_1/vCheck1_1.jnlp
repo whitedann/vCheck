@@ -8,7 +8,20 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="vCheck1_1.jar" size="62792" download="eager" />
+    <jar href="commons-codec-1.10.jar" size="284184" download="eager" />
+    <jar href="commons-collections4-4.1.jar" size="751238" download="eager" />
+    <jar href="commons-csv-1.5.jar" size="41586" download="eager" />
+    <jar href="commons-logging-1.2.jar" size="61829" download="eager" />
+    <jar href="curvesapi-1.04.jar" size="98365" download="eager" />
+    <jar href="httpclient-4.5.6.jar" size="767140" download="eager" />
+    <jar href="httpcore-4.4.10.jar" size="326356" download="eager" />
+    <jar href="poi-3.15.jar" size="2579580" download="eager" />
+    <jar href="poi-ooxml-3.15.jar" size="1338241" download="eager" />
+    <jar href="poi-ooxml-schemas-3.15.jar" size="5859007" download="eager" />
+    <jar href="ssrs-1.1.jar" size="290380" download="eager" />
+    <jar href="stax-api-1.0.1.jar" size="26514" download="eager" />
+    <jar href="vCheck1_1.jar" size="168748" download="eager" />
+    <jar href="xmlbeans-2.6.0.jar" size="2730866" download="eager" />
   </resources>
   <jfx:javafx-desc  width="600" height="400" main-class="sample.Main"  name="vCheck1.1" />
   <update check="background"/>

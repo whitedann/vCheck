@@ -1,22 +1,24 @@
 package sample;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Pair;
 import sample.elements.WellState;
 import sample.excelFiles.OutputSheet;
 
-import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import static javafx.scene.paint.Color.BLACK;
@@ -47,10 +49,10 @@ public class Controller {
     private Text sessionText;
 
     @FXML
-    private TextField barcodeField = new TextField();
+    private TextField barcodeField;
 
     @FXML
-    private TextField customerField = new TextField();
+    private TextField customerField;
 
     /** GUI Objects **/
     private Text upThresh = new Text("Upper Threshold: ");
@@ -63,7 +65,11 @@ public class Controller {
     private Circle[][] wells = new Circle[12][8];
 
     /** Data **/
-    OutputSheet outputSheet;
+    private OutputSheet outputSheet;
+    private String savePath;
+    private String importPath;
+    private String ssrsPath;
+    private String templatePath;
 
     private boolean sessionActive;
     private double sessionStartTime;
@@ -71,14 +77,13 @@ public class Controller {
 
     private static final int timeOutTimeInMillis = 10*1000;
 
-    public Controller() throws IOException {}
+    public Controller() {
+    }
 
     @FXML
     protected void initialize(){
-        outputSheet = new OutputSheet();
         sessionActive = false;
         sessionStartTime = 0;
-        sessionText.setText("Current Session: ");
         bottomPane.setPadding(new Insets(0, 21, 0, 8));
         bottomPane.setSpacing(100);
         bottomBPane.setPadding(new Insets(0, 0, 0, 0));
@@ -111,7 +116,7 @@ public class Controller {
         /** Adds plate/well graphic and function **/
         for(int j = 0; j < wells[0].length; j++) {
             for(int i = 0; i < wells.length; i++) {
-                Circle newCircle = new Circle(44 * i + 24, 44*j + 24, 22);
+                Circle newCircle = new Circle(44 * i + 24, 44*j + 24, 21);
                 newCircle.setStyle("-fx-fill: white");
                 newCircle.setStroke(BLACK);
                 int finalI = i;
@@ -202,8 +207,8 @@ public class Controller {
         }
         focusImage.setCenterY(44*(col)+24);
         focusImage.setCenterX(44*(row)+24);
-        focusImage.setRadius(21);
-        focusImage.setFill(ORANGE);
+        focusImage.setRadius(20);
+        focusImage.setStyle("-fx-fill: darkorange");
     }
 
     @FXML
@@ -235,26 +240,20 @@ public class Controller {
     }
 
     @FXML
-    private void phaseOne() {
+    private void phaseOne() throws IOException {
         login();
-        validateLogin();
-        /**
-        try {
-            outputSheet.executePhaseOne();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            setStatusOfWells();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }**/
-    }
+        outputSheet = new OutputSheet();
 
+        validateLogin();
+
+        outputSheet.executePhaseOne(barcodeField.getText());
+        setStatusOfWells();
+    }
 
     @FXML
     private void phaseTwo() throws IOException {
         if(outputSheet.successfulLogin()) {
+
             outputSheet.executePhaseTwo();
             setStatusOfWells();
         }
@@ -262,13 +261,69 @@ public class Controller {
 
     @FXML
     private void phaseThree() throws IOException {
+
         try {
             outputSheet.executePhaseThree(barcodeField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }
         setStatusOfWells();
+    }
+
+    @FXML
+    public void setImportPath() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
+        if(newPath == null) {
+            return;
+        }
+        else{
+            importPath = newPath.getAbsolutePath() + "/data.xlsx";
+        }
+        outputSheet.setImportPath(importPath);
+    }
+
+    @FXML
+    public void setSavePath() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
+        if(newPath == null){
+            return;
+        }
+        else{
+            savePath = newPath.getAbsolutePath() + "/final.xlsx";
+        }
+        outputSheet.setSavePath(savePath);
+    }
+
+    @FXML
+    public void resetAll() {
         outputSheet = new OutputSheet();
     }
 
+    @FXML
+    public void setSSRSpath() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
+        if(newPath == null){
+            return;
+        }
+        else{
+            ssrsPath =  newPath.getAbsolutePath() + "/plateVolOld.xls";
+        }
+        outputSheet.setSsrsReportPath(ssrsPath);
+    }
+
+    @FXML
+    public void setTemplatePath() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
+        if(newPath == null){
+            return;
+        }
+        else{
+            templatePath = newPath.getAbsolutePath() + "/template.xlsx";
+        }
+        outputSheet.setTemplatePath(templatePath);
+    }
 }
