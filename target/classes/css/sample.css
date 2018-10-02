@@ -36,17 +36,17 @@
     -fx-border-insets: 0 7 4 9, 0, 0, 0;
 }
 
-#generateButton {
+#importButton {
     -fx-border-color: black;
-    -fx-background-color: dodgerblue;
+    -fx-background-color: indianred;
     -fx-background-insets: 1px;
     -fx-border-width: 1px;
     -fx-border-radius: 50px;
     -fx-background-radius: 50px;
 }
 
-#generateButton:hover {
-    -fx-background-color: deepskyblue;
+#importButton:hover {
+    -fx-background-color: orangered;
 }
 
 #acceptButton {

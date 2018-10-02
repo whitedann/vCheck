@@ -24,7 +24,9 @@
             <MenuItem text="Reset Data" onAction="#resetAll"/>
             <MenuItem text="Exit" />
          </Menu>
-         <Menu text="Manual Import"/>
+         <Menu text="Manual Import">
+            <MenuItem text="Open File" onAction="#manuallyImportData" />
+         </Menu>
          <Menu text="Logout"/>
       </MenuBar>
    </top>
@@ -35,7 +37,7 @@
             <TextField fx:id="barcodeField" onAction="#phaseOne" translateY="5" />
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Customer"/>
             <TextField fx:id="customerField" translateY="5"/>
-            <Button fx:id="generateButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="290" translateX="18" text="Import Data" />
+            <Button fx:id="importButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="290" translateX="18" text="Import Data" />
             <Button fx:id="acceptButton" onAction="#phaseThree" translateY="295" translateX="10" mnemonicParsing="false" text="Accept &amp; Save" />
          </children>
       </VBox>
