@@ -161,7 +161,7 @@ public class OutputSheet {
                 }
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(ssrsReportPath + "plateVol2.xlsx")));
                 int inByte;
-                while((inByte = bis.read()) != 1)
+                while((inByte = bis.read()) != -1)
                     bos.write(inByte);
                 EntityUtils.consume(entity);
                 bos.close();
@@ -175,6 +175,7 @@ public class OutputSheet {
         }
         plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
         plateData = plateVolumeInfo.getSheetAt(0);
+        System.out.println(plateData.getRow(3).getCell(0).getStringCellValue());
         return 0;
     }
 
