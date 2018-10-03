@@ -143,43 +143,38 @@ public class OutputSheet {
         String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpGet get = new HttpGet(url);
 
-        /** Test connection **/
-        try{
-            HttpResponse response = client.execute(get);
-        }
-        catch(UnknownHostException e){
-            System.out.println("Could not connect to SSRS");
-            /** DEBUG **/
-            plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
-            plateData = plateVolumeInfo.getSheetAt(0);
-            return 0;
-        }
+        BasicCookieStore store = new BasicCookieStore();
+        CloseableHttpClient client = HttpClients.custom().setDefaultCookieStore(store).build();
 
-        BufferedInputStream bis = new BufferedInputStream(client.execute(get).getEntity().getContent());
-        if(bis.available() == 1){
-            bis.close();
-            System.out.println("Could not connect to SSRS2");
-            /** DEBUG change return to 1**/
-            plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
-            plateData = plateVolumeInfo.getSheetAt(0);
-            return 0;
+        try {
+            HttpUriRequest login = RequestBuilder.get().setUri(url).build();
+            CloseableHttpResponse response = client.execute(login);
+            try{
+                HttpEntity entity = response.getEntity();
+                EntityUtils.consume(entity);
+                BufferedInputStream bis = new BufferedInputStream(entity.getContent());
+                if(bis.available() == 1) {
+                    System.out.println("Could not connect to SSRS");
+                    bis.close();
+                    return 1;
+                }
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(ssrsReportPath + "plateVol2.xlsx")));
+                int inByte;
+                while((inByte = bis.read()) != 1)
+                    bos.write(inByte);
+                EntityUtils.consume(entity);
+                bos.close();
+                bis.close();
+            } finally {
+                response.close();
+            }
         }
-        else{
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(ssrsReportPath + "success.xlsx")));
-            int inByte;
-            while (((inByte = bis.read()) != -1))
-                bos.write(inByte);
-            bos.close();
-            bis.close();
-            System.out.println("attempted to download...");
+        finally {
+            client.close();
         }
-
         plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
         plateData = plateVolumeInfo.getSheetAt(0);
-
         return 0;
     }
 
