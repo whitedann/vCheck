@@ -148,8 +148,8 @@ public class OutputSheet {
         CloseableHttpClient client = HttpClients.custom().setDefaultCookieStore(store).build();
 
         try {
-            HttpUriRequest login = RequestBuilder.get().setUri(url).build();
-            CloseableHttpResponse response = client.execute(login);
+            HttpGet get = new HttpGet(url);
+            CloseableHttpResponse response = client.execute(get);
             try{
                 HttpEntity entity = response.getEntity();
                 EntityUtils.consume(entity);
