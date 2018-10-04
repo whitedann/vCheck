@@ -24,10 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import sample.elements.WellState;
 
 import java.io.*;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -154,11 +151,12 @@ public class OutputSheet {
                     "ssrsreports.idtdna.com",
                     80,
                     "/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=" + barcode);
+            HttpURLConnection c = (HttpURLConnection) link.openConnection();
             System.out.println(link.getContent());
             System.out.println(link.getPort());
             System.out.println(link.getFile());
             BufferedInputStream in = new BufferedInputStream(link.openStream());
-            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xls"), StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -166,18 +164,16 @@ public class OutputSheet {
 
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
-        /**
-        File tmp = new File(ssrsReportPath + "plateVol2.xlsx");
+        File tmp = new File(ssrsReportPath + "plateVol2.xls");
         if(tmp.getTotalSpace() > 1000) {
-            plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
+            plateVolumeInfo = new HSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xls")))));
             plateData = plateVolumeInfo.getSheetAt(0);
         }
         else {
             System.out.println("Failed download");
             return 1;
         }
-         **/
-        return 1;
+        return 0;
     }
 
     private void mergeTemplateWithSSRSReport(){
