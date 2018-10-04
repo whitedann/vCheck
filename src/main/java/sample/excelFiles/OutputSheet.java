@@ -155,7 +155,10 @@ public class OutputSheet {
                     80,
                     "/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=" + barcode);
             System.out.println(link.getContent());
-//            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println(link.getPort());
+            System.out.println(link.getFile());
+            BufferedInputStream in = new BufferedInputStream(link.openStream());
+            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e){
             e.printStackTrace();
