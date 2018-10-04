@@ -25,6 +25,7 @@ import sample.elements.WellState;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -146,19 +147,25 @@ public class OutputSheet {
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
 
-        try (
-                BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-                FileOutputStream fileOutputStream = new FileOutputStream(ssrsReportPath + "plateVol2.xlsx")) {
-            byte dataBuffer[] = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                fileOutputStream.write(dataBuffer, 0, bytesRead);
+        try {
+            URL link = new URL(url);
+            byte[] buffer;
+            int byteRead, byteWritten = 0;
+            OutputStream bos = new BufferedOutputStream(new FileOutputStream(ssrsReportPath + "template.xlsx"));
+
+            URLConnection urlConnection = link.openConnection();
+            InputStream is = urlConnection.getInputStream();
+            buffer = new byte[1024];
+            while ((byteRead = is.read(buffer)) != -1) {
+                bos.write(buffer, 0, byteRead);
+                byteWritten += byteRead;
             }
+            System.out.println("Download Successful");
         }
-        catch (IOException e){
-            System.out.println("Could not connect to SSRS");
-            return 1;
+        catch (Exception e) {
+            e.printStackTrace();
         }
+
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
         File tmp = new File(ssrsReportPath + "plateVol2.xlsx");
