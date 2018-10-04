@@ -29,6 +29,7 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,22 +150,15 @@ public class OutputSheet {
 
         try {
             URL link = new URL(url);
-            byte[] buffer;
-            int byteRead, byteWritten = 0;
             OutputStream bos = new BufferedOutputStream(new FileOutputStream(ssrsReportPath + "template.xlsx"));
-
-            URLConnection urlConnection = link.openConnection();
-            InputStream is = urlConnection.getInputStream();
-            buffer = new byte[1024];
-            while ((byteRead = is.read(buffer)) != -1) {
-                bos.write(buffer, 0, byteRead);
-                byteWritten += byteRead;
-            }
-            System.out.println("Download Successful");
+            InputStream in = link.openStream();
+            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
         }
-        catch (Exception e) {
+        catch (IOException e){
             e.printStackTrace();
         }
+
+
 
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
