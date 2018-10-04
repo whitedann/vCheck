@@ -94,25 +94,6 @@ public class Controller {
         bottomPane.getChildren().add(upThresh);
         bottomBPane.getChildren().add(measuredVol);
 
-        /** Adds Barcode Text Field and Function
-        barcodeField.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ENTER){
-                if(barcodeField.getText().matches("[0-9]+") && barcodeField.getText().length() > 8) {
-                    double currentTime = System.currentTimeMillis();
-                    if(((currentTime - sessionStartTime) > timeOutTimeInMillis) || !this.outputSheet.successfulLogin()){
-                        outputSheet = new OutputSheet();
-                        queryLogin();
-                        validateLogin();
-                    }
-                    if(this.outputSheet.successfulLogin()){
-                        sessionText.setText("Current Session: " + "\n" + currentUser);
-                        phaseOne();
-                    }
-                }
-            }
-        });
-        **/
-
         /** Adds plate/well graphic and function **/
         for(int j = 0; j < wells[0].length; j++) {
             for(int i = 0; i < wells.length; i++) {
@@ -135,8 +116,8 @@ public class Controller {
     @FXML
     private void queryLogin(){
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Login");
-        dialog.setHeaderText("Header");
+        dialog.setTitle("Authenticate");
+        dialog.setHeaderText("Login to Master Control");
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
 
@@ -147,7 +128,7 @@ public class Controller {
 
         TextField username = new TextField();
         username.setPromptText("Username");
-        TextField password = new TextField();
+        PasswordField password = new PasswordField();
         password.setPromptText("Password");
 
         grid.add(new Label("Username:"), 0, 0);

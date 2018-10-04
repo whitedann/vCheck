@@ -23,6 +23,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import sample.elements.WellState;
 
 import java.io.*;
+import java.net.ConnectException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,18 +34,18 @@ import java.util.List;
 import java.util.Map;
 
 public class OutputSheet {
-/**
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-    **/
+
+/**
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Employees\\Danny\\dev\\";
+ **/
     private String importPath, ssrsReportPath, templatePath, savePath;
-
     public static Map wellMappings = new HashMap<Character, Integer>();
 
     private Workbook template, plateVolumeInfo, measuredWorkbook;
@@ -144,38 +146,23 @@ public class OutputSheet {
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
 
-        BasicCookieStore store = new BasicCookieStore();
-        CloseableHttpClient client = HttpClients.custom().setDefaultCookieStore(store).build();
-
-        try {
-            HttpGet get = new HttpGet(url);
-            CloseableHttpResponse response = client.execute(get);
-            try{
-                HttpEntity entity = response.getEntity();
-                EntityUtils.consume(entity);
-                BufferedInputStream bis = new BufferedInputStream(entity.getContent());
-                if(bis.available() == 1) {
-                    System.out.println("Could not connect to SSRS");
-                    bis.close();
-                    return 1;
-                }
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(ssrsReportPath + "plateVol2.xlsx")));
-                int inByte;
-                while((inByte = bis.read()) != -1)
-                    bos.write(inByte);
-                EntityUtils.consume(entity);
-                bos.close();
-                bis.close();
-            } finally {
-                response.close();
+        try (
+                BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+                FileOutputStream fileOutputStream = new FileOutputStream(ssrsReportPath + "plateVol2.xlsx")) {
+            byte dataBuffer[] = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
         }
-        finally {
-            client.close();
+        catch (ConnectException e){
+            System.out.println("Could not connect to SSRS");
+            return 1;
         }
+        /**add check here to delete output file if it is below certain size please and thank you
+         * Also should probably have the function return 1 if it does ... **/
         plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
         plateData = plateVolumeInfo.getSheetAt(0);
-        System.out.println(plateData.getRow(3).getCell(0).getStringCellValue());
         return 0;
     }
 
