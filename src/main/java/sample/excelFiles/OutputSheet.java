@@ -35,17 +35,16 @@ import java.util.List;
 import java.util.Map;
 
 public class OutputSheet {
-    /**
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-    **/
-
+    /**
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Employees\\Danny\\dev\\";
+     **/
     private String importPath, ssrsReportPath, templatePath, savePath;
     public static Map wellMappings = new HashMap<Character, Integer>();
 
@@ -146,6 +145,7 @@ public class OutputSheet {
         String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
+        System.out.println(url);
 
         try {
             URL link = new URL(url);
@@ -169,7 +169,7 @@ public class OutputSheet {
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
         File tmp = new File(ssrsReportPath + "plateVol2.xlsx");
-        if(tmp.getTotalSpace() > 10000) {
+        if(tmp.getTotalSpace() > 1000) {
             plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
             plateData = plateVolumeInfo.getSheetAt(0);
         }
