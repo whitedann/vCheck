@@ -161,8 +161,15 @@ public class OutputSheet {
         }
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
-        plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
-        plateData = plateVolumeInfo.getSheetAt(0);
+        File tmp = new File(ssrsReportPath + "plateVol2.xlsx");
+        if(tmp.getTotalSpace() > 10000) {
+            plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
+            plateData = plateVolumeInfo.getSheetAt(0);
+        }
+        else {
+            System.out.println("Failed download");
+            return 1;
+        }
         return 0;
     }
 
