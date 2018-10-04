@@ -141,20 +141,13 @@ public class OutputSheet {
 
     public int downloadSSRSReport(String barcode) throws IOException {
 
-        String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
-                "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
-        url += barcode;
-
         try {
             URL link = new URL(
                     "http",
                     "ssrsreports.idtdna.com",
                     80,
                     "/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=" + barcode);
-            HttpURLConnection c = (HttpURLConnection) link.openConnection();
-            System.out.println(link.getContent());
-            System.out.println(link.getPort());
-            System.out.println(link.getFile());
+            System.out.println("Status of SSRS Download: " + link.getQuery());
             BufferedInputStream in = new BufferedInputStream(link.openStream());
             Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xls"), StandardCopyOption.REPLACE_EXISTING);
         }
@@ -203,8 +196,10 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            double val = Double.parseDouble(csvRecord.get(4));
-            tempValList.add(val);
+            if(csvParser.getCurrentLineNumber() > 4) {
+                double val = Double.parseDouble(csvRecord.get(4));
+                tempValList.add(val);
+            }
         }
         for(int i = 0; i < 96; i++){
             int row = i / 12;
