@@ -3,6 +3,7 @@ package sample.excelFiles;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -146,22 +147,23 @@ public class OutputSheet {
         String url = "http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?" +
                 "%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=";
         url += barcode;
-        System.out.println(url);
 
         try {
-            URL link = new URL(url);
-            OutputStream bos = new BufferedOutputStream(new FileOutputStream(ssrsReportPath + "template.xlsx"));
-            InputStream in = link.openStream();
-            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
+            URL link = new URL(
+                    "http",
+                    "ssrsreports.idtdna.com",
+                    80,
+                    "/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=" + barcode);
+            System.out.println(link.getContent());
+//            Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xlsx"), StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e){
             e.printStackTrace();
         }
 
-
-
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
+        /**
         File tmp = new File(ssrsReportPath + "plateVol2.xlsx");
         if(tmp.getTotalSpace() > 1000) {
             plateVolumeInfo = new XSSFWorkbook((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx"))));
@@ -171,7 +173,8 @@ public class OutputSheet {
             System.out.println("Failed download");
             return 1;
         }
-        return 0;
+         **/
+        return 1;
     }
 
     private void mergeTemplateWithSSRSReport(){
