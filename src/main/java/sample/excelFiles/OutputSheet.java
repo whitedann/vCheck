@@ -30,16 +30,16 @@ import java.util.List;
 import java.util.Map;
 
 public class OutputSheet {
+    /**
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-    /**
+     **/
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
-     **/
     private String importPath, ssrsReportPath, templatePath, savePath;
     public static Map wellMappings = new HashMap<Character, Integer>();
 
