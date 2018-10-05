@@ -193,10 +193,8 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            if(csvParser.getCurrentLineNumber() > 4) {
-                double val = Double.parseDouble(csvRecord.get(4));
-                tempValList.add(val);
-            }
+            double val = Double.parseDouble(csvRecord.get(4));
+            tempValList.add(val);
         }
         for(int i = 0; i < 96; i++){
             int row = i / 12;

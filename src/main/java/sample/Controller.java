@@ -23,9 +23,11 @@ import java.util.Optional;
 import static javafx.scene.paint.Color.BLACK;
 
 /**    TODO:
-/*  Add menu functions
+/*  Add/Remove Menu functions
     Add difference (target-measured) to focus
     Add paste user + barcode into final sheet
+    Values in bottom pane do not format nicely. trim values to 2 decimal places.
+
  **/
 
 
