@@ -3,17 +3,13 @@ package sample.excelFiles;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.http.HttpConnection;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -207,19 +203,6 @@ public class OutputSheet {
             measuredData[col][row] = tempValList.get(i);
             topTemplatePage.getRow(i+3).getCell(2).setCellValue(tempValList.get(i));
         }
-        /**
-        measuredWorkbook = new XSSFWorkbook(new FileInputStream(new File(path)));
-        measuredDataSheet = measuredWorkbook.getSheetAt(0);
-        double val;
-        for(int i = 0; i < 96; i++){
-            val = measuredDataSheet.getRow(i).getCell(4).getNumericCellValue();
-            topTemplatePage.getRow(i+3).getCell(2).setCellValue(val);
-            int row = i / 12;
-            int col = i % 12;
-            measuredData[col][row] = val;
-        }
-        measuredWorkbook.close();
-         **/
     }
 
     public void updateWellStates(){
@@ -247,6 +230,9 @@ public class OutputSheet {
     }
 
     private void saveFinalSheet(String barcode, String customer) throws IOException {
+        if(customer == ""){
+            customer = "NoCustomerSpecified";
+        }
         String fileLocation = savePath + "/" + customer + "_" + barcode + ".xlsx";
         BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(fileLocation));
         XSSFFormulaEvaluator.evaluateAllFormulaCells(template);

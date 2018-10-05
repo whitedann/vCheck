@@ -33,12 +33,13 @@
    <left>
       <VBox styleClass="side-pane" prefHeight="366.0" prefWidth="132.0" BorderPane.alignment="CENTER">
          <children>
-            <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Barcode"/>
-            <TextField fx:id="barcodeField" onAction="#phaseOne" translateY="5" />
             <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Customer"/>
             <TextField fx:id="customerField" translateY="5"/>
-            <Button fx:id="importButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="290" translateX="18" text="Import Data" />
-            <Button fx:id="acceptButton" onAction="#phaseThree" translateY="295" translateX="10" mnemonicParsing="false" text="Accept &amp; Save" />
+            <Text styleClass="entry-Labels" translateY="5" translateX="14" text="Barcode"/>
+            <TextField fx:id="barcodeField" onAction="#phaseOne" translateY="5" />
+            <Button fx:id="loadButton" onAction="#phaseOne" translateY="5" translateX="10" text="Load"/>
+            <Button fx:id="importButton" onAction="#phaseTwo" mnemonicParsing="false" translateY="270" translateX="18" text="Import Data" />
+            <Button fx:id="acceptButton" onAction="#phaseThree" translateY="275" translateX="10" mnemonicParsing="false" text="Accept &amp; Save" />
          </children>
       </VBox>
    </left>

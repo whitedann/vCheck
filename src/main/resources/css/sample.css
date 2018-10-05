@@ -36,6 +36,18 @@
     -fx-border-insets: 0 7 4 9, 0, 0, 0;
 }
 
+#loadButton {
+    -fx-background-insets: 0px;
+    -fx-background-color: skyblue;
+    -fx-font-size: 12px;
+    -fx-border-color: black;
+}
+
+#loadButton:hover {
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
 #importButton {
     -fx-border-color: black;
     -fx-background-color: orangered;
