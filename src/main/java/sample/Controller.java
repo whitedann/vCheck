@@ -24,8 +24,6 @@ import static javafx.scene.paint.Color.BLACK;
 
 /**    TODO:
 /*  Add menu functions
-    Add load plate button
-    Add download plate data somehow (python script or native java?)
     Add difference (target-measured) to focus
     Add paste user + barcode into final sheet
  **/
@@ -228,7 +226,7 @@ public class Controller {
         queryLogin();
         outputSheet = new OutputSheet();
         if (validateLogin() == 0) {
-            outputSheet.executePhaseOne(barcodeField.getText());
+            outputSheet.executePhaseOne(currentUser, barcodeField.getText());
             setStatusOfWells();
             currentState = 1;
         }

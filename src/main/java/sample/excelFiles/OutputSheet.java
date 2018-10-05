@@ -30,21 +30,21 @@ import java.util.List;
 import java.util.Map;
 
 public class OutputSheet {
-    /**
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-     **/
-    private static final String DEFAULT_IMPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
+    /**
+    private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
-    private static final String DEFAULT_SAVE_PATH = "W:\\\\Employees\\Danny\\dev\\";
+    private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
+     **/
     private String importPath, ssrsReportPath, templatePath, savePath;
     public static Map wellMappings = new HashMap<Character, Integer>();
 
-    private Workbook template, plateVolumeInfo, measuredWorkbook;
-    private Sheet topTemplatePage, dataTemplatePage, plateData, measuredDataSheet;
+    private Workbook template, plateVolumeInfo;
+    private Sheet topTemplatePage, dataTemplatePage, plateData;
     private double[][] targetVolumes = null;
     private double[][] highEnds = null;
     private double[][] lowEnds = null;
@@ -128,11 +128,13 @@ public class OutputSheet {
         return 0;
     }
 
-    public void initializeTemplateFile() throws IOException {
+    public void initializeTemplateFile(String user, String barcode) throws IOException {
         File inputFile = new File(templatePath + "template.xlsx");
         template = new XSSFWorkbook(new FileInputStream(inputFile));
         dataTemplatePage = template.getSheetAt(1);
         topTemplatePage = template.getSheetAt(0);
+        topTemplatePage.getRow(0).getCell(1).setCellValue(barcode);
+        topTemplatePage.getRow(0).getCell(8).setCellValue(user);
     }
 
     public int downloadSSRSReport(String barcode) throws IOException {
@@ -143,7 +145,6 @@ public class OutputSheet {
                     "ssrsreports.idtdna.com",
                     80,
                     "/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&rs:Format=Excel&BarcodeID=" + barcode);
-            System.out.println("Status of SSRS Download: " + link.getQuery());
             BufferedInputStream in = new BufferedInputStream(link.openStream());
             Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xls"), StandardCopyOption.REPLACE_EXISTING);
         }
@@ -269,8 +270,8 @@ public class OutputSheet {
         return lowEnds[col][row];
     }
 
-    public void executePhaseOne(String barcode) throws IOException {
-        initializeTemplateFile();
+    public void executePhaseOne(String user, String barcode) throws IOException {
+        initializeTemplateFile(user, barcode);
         if(downloadSSRSReport(barcode) == 0) {
             mergeTemplateWithSSRSReport();
         }
