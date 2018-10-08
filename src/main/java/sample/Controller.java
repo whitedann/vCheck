@@ -328,7 +328,17 @@ public class Controller {
     @FXML
     public void resetAll() throws IOException {
         outputSheet = new OutputSheet();
+        outputSheet.updateWellStates();
         setStatusOfWells();
+        currentState = 0;
+        importButton.setStyle(
+                "-fx-background-color: lightgrey; " +
+                        "-fx-border-color: darkgrey; " +
+                        "-fx-text-fill: darkgrey");
+        acceptButton.setStyle(
+                "-fx-background-color: lightgrey; " +
+                        "-fx-border-color: darkgrey; " +
+                        "-fx-text-fill: darkgrey");
     }
 
     @FXML
