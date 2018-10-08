@@ -5,13 +5,12 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import sample.elements.WellState;
 import sample.excelFiles.OutputSheet;
@@ -27,9 +26,7 @@ import static javafx.scene.paint.Color.BLACK;
     Add difference (target-measured) to focus
     Add paste user + barcode into final sheet
     Values in bottom pane do not format nicely. trim values to 2 decimal places.
-
  **/
-
 
 public class Controller {
 
@@ -38,13 +35,13 @@ public class Controller {
     private Pane plateGrid;
 
     @FXML
-    private HBox bottomPane;
+    private VBox RightColumn;
 
     @FXML
-    private HBox bottomBPane;
+    private VBox LeftColumn;
 
     @FXML
-    private Text sessionText;
+    private HBox userBox;
 
     @FXML
     private TextField barcodeField;
@@ -52,13 +49,20 @@ public class Controller {
     @FXML
     private TextField customerField;
 
+    @FXML
+    private Button acceptButton;
+
+    @FXML
+    private Button importButton;
+
     /** GUI Objects **/
     private Text upThresh = new Text("Upper Threshold: ");
     private Text lowThresh = new Text("Lower Threshold: ");
     private Text wellPos = new Text("Well Position:");
     private Text targetVol = new Text("Target Volume: ");
     private Text measuredVol = new Text("Measured Volume: ");
-    private Text sessionUser = new Text("Session: ");
+    private Text wellStatus = new Text("Well Status: ");
+    private Text sessionText = new Text("Current Session: \nNone");
     private Circle focusImage = new Circle(0,0,0);
     private Circle[][] wells = new Circle[12][8];
 
@@ -66,11 +70,9 @@ public class Controller {
     private OutputSheet outputSheet;
     private String savePath;
     private String importPath;
-    private String ssrsPath;
-    private String templatePath;
 
-    private boolean sessionActive;
-    private double sessionStartTime;
+    private boolean sessionActive = false;
+    private double sessionStartTime = 0;
     private String currentUser, currentPassword;
     private int currentState;
 
@@ -84,15 +86,27 @@ public class Controller {
         currentState = 0;
         sessionActive = false;
         sessionStartTime = 0;
-        bottomPane.setPadding(new Insets(0, 21, 0, 8));
-        bottomPane.setSpacing(100);
-        bottomBPane.setPadding(new Insets(0, 0, 0, 0));
-        bottomBPane.setSpacing(100);
-        bottomPane.getChildren().add(wellPos);
-        bottomBPane.getChildren().add(targetVol);
-        bottomBPane.getChildren().add(lowThresh);
-        bottomPane.getChildren().add(upThresh);
-        bottomBPane.getChildren().add(measuredVol);
+        RightColumn.setPadding(new Insets(3, 0, 0, 300));
+        RightColumn.setSpacing(8);
+        LeftColumn.setPadding(new Insets(3, 0, 0, 5));
+        LeftColumn.setSpacing(8);
+        RightColumn.getChildren().add(targetVol);
+        RightColumn.getChildren().add(upThresh);
+        RightColumn.getChildren().add(lowThresh);
+        LeftColumn.getChildren().add(wellPos);
+        LeftColumn.getChildren().add(wellStatus);
+        LeftColumn.getChildren().add(measuredVol);
+        userBox.getChildren().add(sessionText);
+        acceptButton.setStyle(
+                        "-fx-background-color: lightgrey; " +
+                        "-fx-border-color: darkgrey; " +
+                        "-fx-text-fill: darkgrey");
+        importButton.setStyle(
+                        "-fx-background-color: lightgrey;" +
+                        "-fx-border-color: darkgrey;" +
+                        "-fx-text-fill: darkgrey");
+
+
 
         /** Adds plate/well graphic and function **/
         for(int j = 0; j < wells[0].length; j++) {
@@ -173,18 +187,20 @@ public class Controller {
 
     private void setFocus(int row, int col) {
         if(this.outputSheet == null){
-            this.targetVol.setText(String.format("Target Volume: "));
+            this.targetVol.setText(String.format("Target Volume:"));
             this.wellPos.setText(String.format("Well Position: "));
             this.upThresh.setText(String.format("Upper Threshold: "));
             this.lowThresh.setText(String.format("Lower Threshold: "));
             this.measuredVol.setText(String.format("Measured Volume: "));
+            this.wellStatus.setText(String.format("Status: "));
         }
         else {
-            this.targetVol.setText(String.format("Target Volume: %3.1f", outputSheet.getTargetVolume(row, col)));
-            this.wellPos.setText(String.format("Well Position: " + outputSheet.getWellPosition(row, col)));
-            this.upThresh.setText(String.format("Upper Threshold: ") + outputSheet.getUpperThreshold(row, col));
-            this.lowThresh.setText(String.format("Lower Threshold: " + outputSheet.getLowerThreshold(row, col)));
-            this.measuredVol.setText(String.format("Measured Volume: " + outputSheet.getMeasuredVol(row, col)));
+            this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)));
+            this.wellPos.setText(String.format("Well Position: ", outputSheet.getWellPosition(row, col)));
+            this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)));
+            this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)));
+            this.measuredVol.setText(String.format("Measured Volume: %3.2f", outputSheet.getMeasuredVol(row, col)));
+            this.wellStatus.setText(String.format("Status: ", outputSheet.getResultsArray()[row][col].toString()));
         }
         focusImage.setCenterY(44*(col)+24);
         focusImage.setCenterX(44*(row)+24);
@@ -225,21 +241,43 @@ public class Controller {
 
     @FXML
     private void phaseOne() throws IOException {
-        queryLogin();
-        outputSheet = new OutputSheet();
-        if (validateLogin() == 0) {
-            outputSheet.executePhaseOne(currentUser, barcodeField.getText());
-            setStatusOfWells();
-            currentState = 1;
+        if((System.currentTimeMillis() - sessionStartTime) > timeOutTimeInMillis){
+            sessionActive = false;
+            sessionText.setText("Current Session: \nNo one!");
+        }
+        boolean numeric = true;
+        int input = 0;
+        try {
+            input = Integer.parseInt(barcodeField.getText());
+        } catch (NumberFormatException e){
+            numeric = false;
+        }
+        if(numeric) {
+            if(!sessionActive) {
+                queryLogin();
+            }
+            outputSheet = new OutputSheet();
+            if (validateLogin() == 0) {
+                sessionText.setText("Current Session: \n" +  currentUser);
+                sessionActive = true;
+                sessionStartTime = System.currentTimeMillis();
+                outputSheet.executePhaseOne(currentUser, String.valueOf(input));
+                setStatusOfWells();
+                currentState = 1;
+                importButton.setStyle("");
+            }
+            outputSheet.updateWellStates();
         }
     }
 
     @FXML
     private void phaseTwo() throws IOException {
         if(currentState == 1) {
-            outputSheet.executePhaseTwo();
+            if(outputSheet.executePhaseTwo() == 0){
+                currentState = 2;
+                acceptButton.setStyle("");
+            }
             setStatusOfWells();
-            currentState = 2;
         }
     }
 
@@ -248,6 +286,14 @@ public class Controller {
         if(currentState == 2) {
             outputSheet.executePhaseThree(barcodeField.getText(), customerField.getText());
             setStatusOfWells();
+            acceptButton.setStyle(
+                    "-fx-background-color: lightgrey; " +
+                            "-fx-border-color: darkgrey; " +
+                            "-fx-text-fill: darkgrey");
+            importButton.setStyle(
+                    "-fx-background-color: lightgrey; " +
+                            "-fx-border-color: darkgrey; " +
+                            "-fx-text-fill: darkgrey");
             currentState = 0;
             resetAll();
         }
@@ -286,32 +332,6 @@ public class Controller {
     }
 
     @FXML
-    public void setSSRSpath() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
-        if(newPath == null){
-            return;
-        }
-        else{
-            ssrsPath =  newPath.getAbsolutePath() + "plateVol2.xlsx";
-        }
-        outputSheet.setSsrsReportPath(ssrsPath);
-    }
-
-    @FXML
-    public void setTemplatePath() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        File newPath = chooser.showDialog(plateGrid.getScene().getWindow());
-        if(newPath == null){
-            return;
-        }
-        else{
-            templatePath = newPath.getAbsolutePath() + "template.xlsx";
-        }
-        outputSheet.setTemplatePath(templatePath);
-    }
-
-    @FXML
     public void manuallyImportData() throws IOException {
         if(currentState == 1) {
             FileChooser chooser = new FileChooser();
@@ -325,5 +345,17 @@ public class Controller {
                 currentState = 2;
             }
         }
+    }
+
+    @FXML
+    public void close(){
+        Stage stage = (Stage) plateGrid.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    public void logout() {
+       sessionActive = false;
+       sessionText.setText("Current Session: \nNone");
     }
 }

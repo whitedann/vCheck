@@ -4,31 +4,35 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-
-
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.GridPane?>
+
+
+<?import javafx.scene.layout.HBox?>
 <BorderPane fx:controller="sample.Controller" fx:id="entirePane" stylesheets="/css/sample.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <MenuBar styleClass="menu" prefHeight="34.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-         <Menu text="File">
-            <MenuItem text="Set Default Import Path" onAction="#setImportPath"/>
-            <MenuItem text="Set Default Save Path" onAction="#setSavePath"/>
-             <MenuItem text="Set Default Report Download Location" onAction="#setSSRSpath" />
-             <MenuItem text="Set Default Template Path" onAction="#setTemplatePath" />
-            <MenuItem text="Reset Data" onAction="#resetAll"/>
-            <MenuItem text="Exit" />
-         </Menu>
-         <Menu text="Manual Import">
-            <MenuItem text="Open File" onAction="#manuallyImportData" />
-         </Menu>
-         <Menu text="Logout"/>
-      </MenuBar>
+      <AnchorPane fx:id="topPane">
+         <MenuBar styleClass="menu" prefHeight="34.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+            <Menu text="File">
+                <MenuItem text="Set Default Import Path" onAction="#setImportPath"/>
+                <MenuItem text="Set Default Save Path" onAction="#setSavePath"/>
+                <MenuItem text="Reset Data" onAction="#resetAll"/>
+                <MenuItem text="Exit" onAction="#close"/>
+            </Menu>
+            <Menu text="Manual Import">
+                <MenuItem text="Open File" onAction="#manuallyImportData" />
+            </Menu>
+            <Menu text="Logout">
+                    <MenuItem text="Logout" onAction="#logout" />
+            </Menu>
+        </MenuBar>
+          <HBox fx:id="userBox" AnchorPane.rightAnchor="90" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0"/>
+      </AnchorPane>
    </top>
    <left>
       <VBox styleClass="side-pane" prefHeight="366.0" prefWidth="132.0" BorderPane.alignment="CENTER">
@@ -47,10 +51,10 @@
       <Pane styleClass="main-pane" layoutX="20" layoutY="20" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane fx:id="plateGrid" styleClass="plate-pane" layoutX="20" layoutY="20" prefHeight="352.0" prefWidth="528.0" />
-            <AnchorPane styleClass="bottom-pane" layoutY="396.0" prefHeight="69.0" prefWidth="568.0">
-                <HBox fx:id="bottomPane" styleClass="info-Text" translateY="15" translateX="5"/>
-                <HBox fx:id="bottomBPane" styleClass="info-Text" translateY="30" translateX="5"/>
-            </AnchorPane>
+            <GridPane styleClass="bottom-pane" layoutY="396.0" prefHeight="69.0" prefWidth="568.0">
+               <VBox fx:id="RightColumn" />
+               <VBox fx:id="LeftColumn" />
+            </GridPane>
          </children>
       </Pane>
    </center>

@@ -1,5 +1,6 @@
 package sample.excelFiles;
 
+import javafx.scene.control.Alert;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -13,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
@@ -22,6 +24,7 @@ import sample.elements.WellState;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -36,21 +39,23 @@ public class OutputSheet {
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
      **/
+
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
+
     private String importPath, ssrsReportPath, templatePath, savePath;
-    public static Map wellMappings = new HashMap<Character, Integer>();
+    private static Map wellMappings = new HashMap<Character, Integer>();
 
     private Workbook template, plateVolumeInfo;
     private Sheet topTemplatePage, dataTemplatePage, plateData;
-    private double[][] targetVolumes = null;
-    private double[][] highEnds = null;
-    private double[][] lowEnds = null;
-    private double[][] measuredData = null;
-    private String[][] wellPositions = null;
-    private WellState[][] states = null;
+    private double[][] targetVolumes;
+    private double[][] highEnds;
+    private double[][] lowEnds;
+    private double[][] measuredData;
+    private String[][] wellPositions;
+    private WellState[][] states;
 
     public OutputSheet(){
         this.importPath = DEFAULT_IMPORT_PATH;
@@ -72,6 +77,7 @@ public class OutputSheet {
         lowEnds = new double[12][8];
         wellPositions = new String[12][8];
         measuredData = new double[12][8];
+        states = new WellState[12][8];
     }
 
     public int downloadTemplate(String user, String pass) throws IOException {
@@ -108,6 +114,10 @@ public class OutputSheet {
                 if(bis.available() == 1){
                     System.out.println("Could not connect to Master Control");
                     bis.close();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Could not reach Master Control");
+                    alert.setContentText("Master Control could not be reached \nVerify your login info & verify master control is online (idtdna.mastercontrol.com)");
+                    alert.showAndWait();
                     return 1;
                 }
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(templatePath + "template.xlsx")));
@@ -122,23 +132,34 @@ public class OutputSheet {
                 response3.close();
             }
         }
+        catch (UnknownHostException e){
+            System.out.println("Could not connect to Master Control");
+            return 1;
+        }
         finally {
             client.close();
         }
+        System.out.println("No errors in downloading vCheck template");
         return 0;
     }
 
-    public void initializeTemplateFile(String user, String barcode) throws IOException {
+    private int initializeTemplateFile(String user, String barcode) throws IOException {
         File inputFile = new File(templatePath + "template.xlsx");
-        template = new XSSFWorkbook(new FileInputStream(inputFile));
+        try {
+            template = new XSSFWorkbook(new FileInputStream(inputFile));
+        } catch (FileNotFoundException e){
+            System.out.println("Could not read template file");
+            return 1;
+        }
+        System.out.println("Template Successfully Loaded");
         dataTemplatePage = template.getSheetAt(1);
         topTemplatePage = template.getSheetAt(0);
         topTemplatePage.getRow(0).getCell(1).setCellValue(barcode);
         topTemplatePage.getRow(0).getCell(8).setCellValue(user);
+        return 0;
     }
 
-    public int downloadSSRSReport(String barcode) throws IOException {
-
+    private int downloadSSRSReport(String barcode) throws IOException {
         try {
             URL link = new URL(
                     "http",
@@ -148,21 +169,29 @@ public class OutputSheet {
             BufferedInputStream in = new BufferedInputStream(link.openStream());
             Files.copy(in, Paths.get(ssrsReportPath + "plateVol2.xls"), StandardCopyOption.REPLACE_EXISTING);
         }
-        catch (IOException e){
-            e.printStackTrace();
+        catch (UnknownHostException | ConnectException e){
+            System.out.println("Failed to download SSRS report for barcde: " + barcode);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Failed to download volume info from SSRS \nCheck the barcode maybe or something");
+            alert.showAndWait();
+            return 1;
         }
 
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
-        File tmp = new File(ssrsReportPath + "plateVol2.xls");
-        if(tmp.getTotalSpace() > 1000) {
-            plateVolumeInfo = new HSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xls")))));
+        try {
+            plateVolumeInfo = new XSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx")))));
             plateData = plateVolumeInfo.getSheetAt(0);
-        }
-        else {
-            System.out.println("Failed download");
+        } catch (NotOLE2FileException e) {
+            System.out.println("Failed to download SSRS report OR File type is .xlsx instead of .xls");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Something went wrong in downloading SSRS report.\n Either bad barcode or bad connection.");
+            alert.showAndWait();
             return 1;
         }
+        System.out.println("SSRS report download successful");
         return 0;
     }
 
@@ -188,8 +217,18 @@ public class OutputSheet {
         }
     }
 
-    private void loadMeasuredDataAndMerge() throws IOException {
-        Reader reader = Files.newBufferedReader(Paths.get(importPath + "measuredData.csv"));
+    private int loadMeasuredDataAndMerge() throws IOException {
+        Reader reader;
+        try {
+            reader = Files.newBufferedReader(Paths.get(importPath + "measuredData.csv"));
+        }catch (NoSuchFileException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Could not find specified data file");
+            alert.setTitle("Invalid file");
+            alert.showAndWait();
+            System.out.println("Could not find that import file");
+            return 1;
+        }
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
@@ -202,6 +241,8 @@ public class OutputSheet {
             measuredData[col][row] = tempValList.get(i);
             topTemplatePage.getRow(i+3).getCell(2).setCellValue(tempValList.get(i));
         }
+        System.out.println("Successfully loaded data from vCheck instrument");
+        return 0;
     }
 
     public void updateWellStates(){
@@ -240,12 +281,14 @@ public class OutputSheet {
     }
 
     public void clearData(){
-        targetVolumes = null;
-        highEnds = null;
-        lowEnds = null;
-        measuredData = null;
-        wellPositions = null;
-        states = null;
+        states = new WellState[12][8];
+        targetVolumes = new double[12][8];
+        highEnds = new double[12][8];
+        lowEnds = new double[12][8];
+        wellPositions = new String[12][8];
+        measuredData = new double[12][8];
+        states = new WellState[12][8];
+        System.out.println("Data has been reset");
     }
 
     public WellState[][] getResultsArray(){
@@ -276,15 +319,26 @@ public class OutputSheet {
         updateWellStates();
     }
 
-    public void executePhaseTwo() throws IOException {
-        loadMeasuredDataAndMerge();
-        updateWellStates();
+    public int executePhaseTwo() throws IOException {
+        if(loadMeasuredDataAndMerge() == 0){
+            updateWellStates();
+            return 0;
+        }
+        else{
+            updateWellStates();
+            return 1;
+        }
     }
 
+    /** Overloaded function for manual import **/
     public void executePhaseTwo(File file) throws IOException {
         importPath = file.getAbsolutePath();
-        loadMeasuredDataAndMerge();
-        updateWellStates();
+        if(loadMeasuredDataAndMerge() == 0){
+            updateWellStates();
+        }
+        else{
+            updateWellStates();
+        }
     }
 
     public void executePhaseThree(String barcode, String customer) throws IOException {
@@ -292,8 +346,8 @@ public class OutputSheet {
         clearData();
     }
 
-    public String getMeasuredVol(int col, int row) {
-        return String.valueOf(measuredData[col][row]);
+    public Double getMeasuredVol(int col, int row) {
+        return measuredData[col][row];
     }
 
     public void setImportPath(String importPath) {

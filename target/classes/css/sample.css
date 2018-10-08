@@ -44,13 +44,16 @@
 }
 
 #loadButton:hover {
-    -fx-border-color: white;
-    -fx-text-fill: white;
+    -fx-background-color: orange;
+}
+
+#topPane {
+    -fx-background-color: grey;
 }
 
 #importButton {
     -fx-border-color: black;
-    -fx-background-color: orangered;
+    -fx-background-color: skyblue;
     -fx-background-insets: 1px;
     -fx-border-width: 1px;
     -fx-border-radius: 50px;
@@ -64,7 +67,7 @@
 #acceptButton {
     -fx-border-color: black;
     -fx-background-color: limegreen;
-    -fx-background-insets: 1px;
+    -fx-background-insets: 0px;
 }
 
 #acceptButton:hover {
@@ -84,5 +87,5 @@
 }
 
 .bottom-pane {
-    -fx-font-size: 10px;
+    -fx-font-size: 12px;
 }
