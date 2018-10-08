@@ -181,7 +181,7 @@ public class OutputSheet {
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
         try {
-            plateVolumeInfo = new XSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx")))));
+            plateVolumeInfo = new HSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xls")))));
             plateData = plateVolumeInfo.getSheetAt(0);
         } catch (NotOLE2FileException e) {
             System.out.println("Failed to download SSRS report OR File type is .xlsx instead of .xls");
