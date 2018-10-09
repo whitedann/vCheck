@@ -245,17 +245,21 @@ public class OutputSheet {
         return 0;
     }
 
+    public void initializeWellStates(){
+        for(int i = 0; i < 96; i++){
+            int col = i % 12;
+            int row = i / 12;
+            if(targetVolumes[col][row] >= 30)
+                states[col][row] = WellState.NODATA;
+            else
+                states[col][row] = WellState.EMPTY;
+        }
+    }
+
     public void updateWellStates(){
         for(int i = 0; i < 96; i++){
             int col = i % 12;
             int row = i / 12;
-            if(targetVolumes[col][row] <= 20 && measuredData[col][row] <= 20){
-                states[col][row] = WellState.EMPTY;
-                continue;
-            }
-            else{
-                states[col][row] = WellState.NODATA;
-            }
             if(measuredData[col][row] <= highEnds[col][row] &&
                     measuredData[col][row] >= lowEnds[col][row]){
                 states[col][row] = WellState.PASS;
@@ -264,8 +268,6 @@ public class OutputSheet {
                     measuredData[col][row] < lowEnds[col][row])){
                 states[col][row] = WellState.FAIL;
             }
-            else
-                states[col][row] = WellState.EMPTY;
         }
     }
 
@@ -316,7 +318,7 @@ public class OutputSheet {
         if(downloadSSRSReport(barcode) == 0) {
             mergeTemplateWithSSRSReport();
         }
-        updateWellStates();
+        initializeWellStates();
     }
 
     public int executePhaseTwo() throws IOException {

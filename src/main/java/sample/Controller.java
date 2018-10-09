@@ -266,7 +266,6 @@ public class Controller {
                 currentState = 1;
                 importButton.setStyle("");
             }
-            outputSheet.updateWellStates();
         }
     }
 
