@@ -208,9 +208,10 @@ public class OutputSheet {
             dataTemplatePage.getRow(i-2).getCell(5).setCellValue(plateData.getRow(i).getCell(5).getNumericCellValue());
         }
         for(int i = 0; i < plateData.getPhysicalNumberOfRows() - 2; i++) {
+            /** converts ascii well position (e.g. "A10") into CxR numeric (e.g. 0x9) **/
             int col = Integer.parseInt(plateData.getRow(i + 2).getCell(0).getStringCellValue().substring(1)) - 1;
             int row = (int) wellMappings.get(plateData.getRow(i + 2).getCell(0).getStringCellValue().charAt(0)) - 1;
-            targetVolumes[col][row] = dataTemplatePage.getRow(i).getCell(3).getNumericCellValue();
+            targetVolumes[col][row] = topTemplatePage.getRow(i+3).getCell(1).getNumericCellValue();
             highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
             lowEnds[col][row] = targetVolumes[col][row] * 0.95 - 10;
             wellPositions[col][row] = plateData.getRow(i + 2).getCell(0).getStringCellValue();
@@ -253,10 +254,10 @@ public class OutputSheet {
                 states[col][row] = WellState.EMPTY;
                 continue;
             }
-            if(measuredData[col][row] <= 20 && targetVolumes[col][row] >= 50){
-                states[col][row] = WellState.FAIL;
+            else{
+                states[col][row] = WellState.NODATA;
             }
-            else if(measuredData[col][row] <= highEnds[col][row] &&
+            if(measuredData[col][row] <= highEnds[col][row] &&
                     measuredData[col][row] >= lowEnds[col][row]){
                 states[col][row] = WellState.PASS;
             }
