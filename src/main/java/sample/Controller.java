@@ -76,7 +76,7 @@ public class Controller {
     private String currentUser, currentPassword;
     private int currentState;
 
-    private static final int timeOutTimeInMillis = 10*1000;
+    private static final int timeOutTimeInMillis = 10*10000;
 
     public Controller() {
     }
@@ -275,8 +275,8 @@ public class Controller {
             if(outputSheet.executePhaseTwo() == 0){
                 currentState = 2;
                 acceptButton.setStyle("");
+                setStatusOfWells();
             }
-            setStatusOfWells();
         }
     }
 
@@ -349,9 +349,10 @@ public class Controller {
                 return;
             }
             else{
-                outputSheet.executePhaseTwo(toImport);
-                setStatusOfWells();
-                currentState = 2;
+                if(outputSheet.executePhaseTwo(toImport) == 0) {
+                    setStatusOfWells();
+                    currentState = 2;
+                }
             }
         }
     }

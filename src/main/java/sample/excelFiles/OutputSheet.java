@@ -217,10 +217,10 @@ public class OutputSheet {
         }
     }
 
-    private int loadMeasuredDataAndMerge() throws IOException {
+    private int loadMeasuredDataAndMerge(String file) throws IOException {
         Reader reader;
         try {
-            reader = Files.newBufferedReader(Paths.get(importPath + "measuredData.csv"));
+            reader = Files.newBufferedReader(Paths.get(importPath));
         }catch (NoSuchFileException e){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Could not find specified data file");
@@ -322,7 +322,8 @@ public class OutputSheet {
     }
 
     public int executePhaseTwo() throws IOException {
-        if(loadMeasuredDataAndMerge() == 0){
+        importPath = DEFAULT_IMPORT_PATH + "measuredData.csv";
+        if(loadMeasuredDataAndMerge(importPath) == 0){
             updateWellStates();
             return 0;
         }
@@ -333,13 +334,15 @@ public class OutputSheet {
     }
 
     /** Overloaded function for manual import **/
-    public void executePhaseTwo(File file) throws IOException {
+    public int executePhaseTwo(File file) throws IOException {
         importPath = file.getAbsolutePath();
-        if(loadMeasuredDataAndMerge() == 0){
+        if(loadMeasuredDataAndMerge(importPath) == 0){
             updateWellStates();
+            return 0;
         }
         else{
             updateWellStates();
+            return 1;
         }
     }
 
