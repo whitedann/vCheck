@@ -40,7 +40,7 @@ public class OutputSheet {
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
      **/
 
-    private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
+    private static final String DEFAULT_IMPORT_PATH = "C:\\\\Users\\mnp-fppod-01\\Documents\\BioMicroLab\\VolumeCheck\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
@@ -249,12 +249,12 @@ public class OutputSheet {
         for(int i = 0; i < 96; i++){
             int col = i % 12;
             int row = i / 12;
-            if(targetVolumes[col][row] == 0 && measuredData[col][row] == 0){
+            if(targetVolumes[col][row] <= 20 && measuredData[col][row] <= 20){
                 states[col][row] = WellState.EMPTY;
                 continue;
             }
-            if(measuredData[col][row] == 0){
-                states[col][row] = WellState.NODATA;
+            if(measuredData[col][row] <= 20 && targetVolumes[col][row] >= 50){
+                states[col][row] = WellState.FAIL;
             }
             else if(measuredData[col][row] <= highEnds[col][row] &&
                     measuredData[col][row] >= lowEnds[col][row]){
