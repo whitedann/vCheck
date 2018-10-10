@@ -294,7 +294,7 @@ public class Controller {
 
         if(lastFilePath.isPresent()) {
             System.out.println("Using File: " + lastFilePath.toString());
-            return (new File(String.valueOf(lastFilePath)));
+            return (new File(String.valueOf(lastFilePath.get())));
         }
         else
             return null;
