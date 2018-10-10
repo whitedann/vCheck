@@ -16,7 +16,6 @@ import sample.elements.WellState;
 import sample.excelFiles.OutputSheet;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,9 +27,8 @@ import static javafx.scene.paint.Color.BLACK;
 
 /**    TODO:
 /*  Add/Remove Menu functions
-    Add difference (target-measured) to focus
-    Add paste user + barcode into final sheet
-    Values in bottom pane do not format nicely. trim values to 2 decimal places.
+    Fix bug wiht Invitae Plates
+    Is file filter working for most recent import?
  **/
 
 public class Controller {
@@ -290,12 +288,14 @@ public class Controller {
         Path directory = Paths.get(dir);
 
         Optional<Path> lastFilePath = Files.list(directory)
-                .filter(f-> !Files.isDirectory(f))
+                .filter(f -> !Files.isDirectory(f))
                 .filter(f -> f.toString().endsWith(".csv"))
                 .max(Comparator.comparingLong(f -> f.toFile().lastModified()));
 
-        if(lastFilePath.isPresent())
+        if(lastFilePath.isPresent()) {
+            System.out.println("Using File: " + lastFilePath.toString());
             return (new File(String.valueOf(lastFilePath)));
+        }
         else
             return null;
     }
@@ -346,7 +346,7 @@ public class Controller {
     @FXML
     public void resetAll() throws IOException {
         outputSheet = new OutputSheet();
-        outputSheet.updateWellStates();
+        outputSheet.initializeWellStates();
         setStatusOfWells();
         currentState = 0;
         importButton.setStyle(

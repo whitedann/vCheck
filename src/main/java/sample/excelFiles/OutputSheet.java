@@ -249,7 +249,7 @@ public class OutputSheet {
         for(int i = 0; i < 96; i++){
             int col = i % 12;
             int row = i / 12;
-            if(targetVolumes[col][row] >= 30)
+            if(targetVolumes[col][row] > 30)
                 states[col][row] = WellState.NODATA;
             else
                 states[col][row] = WellState.EMPTY;
@@ -261,7 +261,8 @@ public class OutputSheet {
             int col = i % 12;
             int row = i / 12;
             if(measuredData[col][row] <= highEnds[col][row] &&
-                    measuredData[col][row] >= lowEnds[col][row]){
+                    measuredData[col][row] >= lowEnds[col][row] &&
+                    measuredData[col][row] > 30){
                 states[col][row] = WellState.PASS;
             }
             else if((measuredData[col][row] > highEnds[col][row] ||
