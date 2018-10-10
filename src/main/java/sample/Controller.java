@@ -16,7 +16,12 @@ import sample.elements.WellState;
 import sample.excelFiles.OutputSheet;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.Optional;
 
 import static javafx.scene.paint.Color.BLACK;
@@ -61,7 +66,7 @@ public class Controller {
     private Text wellPos = new Text("Well Position:");
     private Text targetVol = new Text("Target Volume: ");
     private Text measuredVol = new Text("Measured Volume: ");
-    private Text wellStatus = new Text("Well Status: ");
+    private Text wellStatus = new Text("Status: ");
     private Text sessionText = new Text("Current Session: \nNone");
     private Circle focusImage = new Circle(0,0,0);
     private Circle[][] wells = new Circle[12][8];
@@ -69,7 +74,7 @@ public class Controller {
     /** Data **/
     private OutputSheet outputSheet;
     private String savePath;
-    private String importPath;
+    private String importPath = "C:\\\\Users\\mnp-fppod-01\\Documents\\BioMicroLab\\VolumeCheck\\";
 
     private boolean sessionActive = false;
     private double sessionStartTime = 0;
@@ -196,11 +201,11 @@ public class Controller {
         }
         else {
             this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)));
-            this.wellPos.setText(String.format("Well Position: ", outputSheet.getWellPosition(row, col)));
+            this.wellPos.setText(String.format("Well Position: %s", outputSheet.getWellPosition(row, col)));
             this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)));
             this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)));
             this.measuredVol.setText(String.format("Measured Volume: %3.2f", outputSheet.getMeasuredVol(row, col)));
-            this.wellStatus.setText(String.format("Status: ", outputSheet.getResultsArray()[row][col].toString()));
+            this.wellStatus.setText(String.format("Status: %s", outputSheet.getResultsArray()[row][col].toString()));
         }
         focusImage.setCenterY(44*(col)+24);
         focusImage.setCenterX(44*(row)+24);
@@ -240,7 +245,7 @@ public class Controller {
     }
 
     @FXML
-    private void phaseOne() throws IOException {
+    private void loadPlateButton() throws IOException {
         if((System.currentTimeMillis() - sessionStartTime) > timeOutTimeInMillis){
             sessionActive = false;
             sessionText.setText("Current Session: \nNo one!");
@@ -270,9 +275,10 @@ public class Controller {
     }
 
     @FXML
-    private void phaseTwo() throws IOException {
+    private void autoImportButton() throws IOException {
         if(currentState == 1) {
-            if(outputSheet.executePhaseTwo() == 0){
+            File toImport = findMostRecentMeasuredData(importPath);
+            if(outputSheet.executePhaseTwo(toImport) == 0){
                 currentState = 2;
                 acceptButton.setStyle("");
                 setStatusOfWells();
@@ -280,11 +286,24 @@ public class Controller {
         }
     }
 
+    private File findMostRecentMeasuredData(String dir) throws IOException {
+        Path directory = Paths.get(dir);
+
+        Optional<Path> lastFilePath = Files.list(directory)
+                .filter(f-> !Files.isDirectory(f))
+                .filter(f -> f.toString().endsWith(".csv"))
+                .max(Comparator.comparingLong(f -> f.toFile().lastModified()));
+
+        if(lastFilePath.isPresent())
+            return (new File(String.valueOf(lastFilePath)));
+        else
+            return null;
+    }
+
     @FXML
-    private void phaseThree() throws IOException {
+    private void acceptAndSaveButton() throws IOException {
         if(currentState == 2) {
             outputSheet.executePhaseThree(barcodeField.getText(), customerField.getText());
-            setStatusOfWells();
             acceptButton.setStyle(
                     "-fx-background-color: lightgrey; " +
                             "-fx-border-color: darkgrey; " +
@@ -350,6 +369,7 @@ public class Controller {
             }
             else{
                 if(outputSheet.executePhaseTwo(toImport) == 0) {
+                    acceptButton.setStyle("");
                     setStatusOfWells();
                     currentState = 2;
                 }

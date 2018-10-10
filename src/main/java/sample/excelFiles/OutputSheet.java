@@ -217,7 +217,7 @@ public class OutputSheet {
         }
     }
 
-    private int loadMeasuredDataAndMerge(String file) throws IOException {
+    private int loadMeasuredDataAndMerge() throws IOException {
         Reader reader;
         try {
             reader = Files.newBufferedReader(Paths.get(importPath));
@@ -323,7 +323,7 @@ public class OutputSheet {
 
     public int executePhaseTwo() throws IOException {
         importPath = DEFAULT_IMPORT_PATH + "measuredData.csv";
-        if(loadMeasuredDataAndMerge(importPath) == 0){
+        if(loadMeasuredDataAndMerge() == 0){
             updateWellStates();
             return 0;
         }
@@ -336,7 +336,7 @@ public class OutputSheet {
     /** Overloaded function for manual import **/
     public int executePhaseTwo(File file) throws IOException {
         importPath = file.getAbsolutePath();
-        if(loadMeasuredDataAndMerge(importPath) == 0){
+        if(loadMeasuredDataAndMerge() == 0){
             updateWellStates();
             return 0;
         }
