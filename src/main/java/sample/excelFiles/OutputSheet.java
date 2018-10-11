@@ -199,6 +199,8 @@ public class OutputSheet {
         dataTemplatePage.setForceFormulaRecalculation(true);
         for(int i = 2; i < plateData.getPhysicalNumberOfRows(); i++){
             for(int j = 1; j <= 4; j++) {
+                System.out.println(plateData.getRow(i).getCell(0).getStringCellValue());
+                System.out.println(plateData.getRow(i).getCell(j).getNumericCellValue());
                 dataTemplatePage.getRow(i-2).getCell(0).setCellValue(plateData.getRow(i).getCell(0).getStringCellValue());
                 dataTemplatePage.getRow(i-2).getCell(j).setCellValue(plateData.getRow(i).getCell(j).getNumericCellValue());
             }
