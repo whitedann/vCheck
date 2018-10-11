@@ -209,6 +209,7 @@ public class OutputSheet {
         }
         for(int i = 0; i < plateData.getPhysicalNumberOfRows() - 2; i++) {
             int col = Integer.parseInt(plateData.getRow(i + 2).getCell(0).getStringCellValue().substring(1)) - 1;
+            /** Here!! **/
             int row = (int) wellMappings.get(plateData.getRow(i + 2).getCell(0).getStringCellValue().charAt(0)) - 1;
             targetVolumes[col][row] = dataTemplatePage.getRow(i).getCell(3).getNumericCellValue();
             highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;

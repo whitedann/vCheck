@@ -81,9 +81,6 @@ public class Controller {
 
     private static final int timeOutTimeInMillis = 10*10000;
 
-    public Controller() {
-    }
-
     @FXML
     protected void initialize(){
         currentState = 0;
