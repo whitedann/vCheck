@@ -40,7 +40,7 @@ public class OutputSheet {
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
      **/
 
-    private static final String DEFAULT_IMPORT_PATH = "C:\\\\Users\\mnp-fppod-01\\Documents\\BioMicroLab\\VolumeCheck\\";
+    private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
