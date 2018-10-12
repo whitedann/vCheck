@@ -239,15 +239,17 @@ public class OutputSheet {
         for(CSVRecord csvRecord : csvParser){
             if(csvRecord.getRecordNumber() > 4) {
                 double val = Double.parseDouble(csvRecord.get(4));
-                System.out.println(csvRecord.get(4));
                 tempValList.add(val);
             }
         }
         for(int i = 0; i < tempValList.size(); i++){
             int row = i / 12;
             int col = i % 12;
-            measuredData[col][row] = tempValList.get(i);
-            topTemplatePage.getRow(i+3).getCell(2).setCellValue(tempValList.get(i));
+            double finalValue = tempValList.get(i);
+            if(Math.abs(finalValue) < 50)
+                finalValue = 0;
+            measuredData[col][row] = finalValue;
+            topTemplatePage.getRow(i+3).getCell(2).setCellValue(finalValue);
         }
         System.out.println("Successfully loaded data from vCheck instrument");
         return 0;
