@@ -237,8 +237,10 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            //double val = Double.parseDouble(csvRecord.get(4));
-            System.out.println(csvRecord.get(4));
+            while(csvRecord.getRecordNumber() >= 4) {
+                //double val = Double.parseDouble(csvRecord.get(4));
+                System.out.println(csvRecord.get(4));
+            }
             //tempValList.add(val);
         }
         for(int i = 0; i < tempValList.size(); i++){
