@@ -199,8 +199,11 @@ public class OutputSheet {
         dataTemplatePage.setForceFormulaRecalculation(true);
         for(int i = 2; i < plateData.getPhysicalNumberOfRows(); i++){
             for(int j = 1; j <= 4; j++) {
-                System.out.println(plateData.getRow(i).getCell(0).getStringCellValue());
-                System.out.println(plateData.getRow(i).getCell(j).getNumericCellValue());
+                /** Creates cells in template if they do not exist **/
+                if(dataTemplatePage.getRow(i-2).getCell(0) == null){
+                    dataTemplatePage.getRow(i-2).createCell(0);
+                    dataTemplatePage.getRow(i-2).createCell(j);
+                }
                 dataTemplatePage.getRow(i-2).getCell(0).setCellValue(plateData.getRow(i).getCell(0).getStringCellValue());
                 dataTemplatePage.getRow(i-2).getCell(j).setCellValue(plateData.getRow(i).getCell(j).getNumericCellValue());
             }
@@ -211,7 +214,6 @@ public class OutputSheet {
         }
         for(int i = 0; i < plateData.getPhysicalNumberOfRows() - 2; i++) {
             int col = Integer.parseInt(plateData.getRow(i + 2).getCell(0).getStringCellValue().substring(1)) - 1;
-            /** Here!! **/
             int row = (int) wellMappings.get(plateData.getRow(i + 2).getCell(0).getStringCellValue().charAt(0)) - 1;
             targetVolumes[col][row] = dataTemplatePage.getRow(i).getCell(3).getNumericCellValue();
             highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
@@ -235,8 +237,10 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            double val = Double.parseDouble(csvRecord.get(4));
-            tempValList.add(val);
+            if(csvParser.getCurrentLineNumber() >= 4) {
+                double val = Double.parseDouble(csvRecord.get(4));
+                tempValList.add(val);
+            }
         }
         for(int i = 0; i < 96; i++){
             int row = i / 12;
@@ -323,18 +327,6 @@ public class OutputSheet {
             mergeTemplateWithSSRSReport();
         }
         initializeWellStates();
-    }
-
-    public int executePhaseTwo() throws IOException {
-        importPath = DEFAULT_IMPORT_PATH + "measuredData.csv";
-        if(loadMeasuredDataAndMerge() == 0){
-            updateWellStates();
-            return 0;
-        }
-        else{
-            updateWellStates();
-            return 1;
-        }
     }
 
     /** Overloaded function for manual import **/
