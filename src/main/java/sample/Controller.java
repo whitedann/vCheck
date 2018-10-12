@@ -72,7 +72,7 @@ public class Controller {
     /** Data **/
     private OutputSheet outputSheet;
     private String savePath;
-    private String importPath = "C:\\\\Users\\mnp-fppod-01\\Documents\\BioMicroLab\\VolumeCheck\\";
+    private String importPath = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
 
     private boolean sessionActive = false;
     private double sessionStartTime = 0;
