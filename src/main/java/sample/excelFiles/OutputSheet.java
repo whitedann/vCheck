@@ -242,7 +242,9 @@ public class OutputSheet {
                 tempValList.add(val);
             }
         }
-        for(int i = 0; i < 96; i++){
+        System.out.println("using : " + importPath.toString());
+        System.out.println("tempVal size : " + tempValList.size());
+        for(int i = 0; i < tempValList.size(); i++){
             int row = i / 12;
             int col = i % 12;
             measuredData[col][row] = tempValList.get(i);
