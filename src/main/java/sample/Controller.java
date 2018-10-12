@@ -286,7 +286,7 @@ public class Controller {
 
         Optional<Path> lastFilePath = Files.list(directory)
                 .filter(f -> !Files.isDirectory(f))
-                .filter(f -> f.toString().endsWith(".csv"))
+                .filter(f -> f.toString().endsWith(".CSV"))
                 .max(Comparator.comparingLong(f -> f.toFile().lastModified()));
 
         if(lastFilePath.isPresent()) {
