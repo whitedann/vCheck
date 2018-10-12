@@ -237,7 +237,7 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            while(csvRecord.getRecordNumber() >= 4) {
+            if(csvRecord.getRecordNumber() > 4) {
                 //double val = Double.parseDouble(csvRecord.get(4));
                 System.out.println(csvRecord.get(4));
             }
