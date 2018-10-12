@@ -238,10 +238,10 @@ public class OutputSheet {
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
             if(csvRecord.getRecordNumber() > 4) {
-                //double val = Double.parseDouble(csvRecord.get(4));
+                double val = Double.parseDouble(csvRecord.get(4));
                 System.out.println(csvRecord.get(4));
+                tempValList.add(val);
             }
-            //tempValList.add(val);
         }
         for(int i = 0; i < tempValList.size(); i++){
             int row = i / 12;
