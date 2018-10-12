@@ -237,13 +237,11 @@ public class OutputSheet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         List<Double> tempValList = new ArrayList<>();
         for(CSVRecord csvRecord : csvParser){
-            if(csvParser.getCurrentLineNumber() >= 4) {
+            while(csvRecord.getRecordNumber() >= 4) {
                 double val = Double.parseDouble(csvRecord.get(4));
                 tempValList.add(val);
             }
         }
-        System.out.println("using : " + importPath.toString());
-        System.out.println("tempVal size : " + tempValList.size());
         for(int i = 0; i < tempValList.size(); i++){
             int row = i / 12;
             int col = i % 12;
