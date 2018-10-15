@@ -358,6 +358,8 @@ public class Controller {
                 "-fx-background-color: lightgrey; " +
                         "-fx-border-color: darkgrey; " +
                         "-fx-text-fill: darkgrey");
+        barcodeField.setText("");
+        customerField.setText("");
     }
 
     @FXML
