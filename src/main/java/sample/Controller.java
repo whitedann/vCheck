@@ -77,12 +77,13 @@ public class Controller {
     private boolean sessionActive = false;
     private double sessionStartTime = 0;
     private String currentUser, currentPassword;
-    private int currentState;
+    private int currentState, primerMixFlag;
 
     private static final int timeOutTimeInMillis = 10*10000;
 
     @FXML
     protected void initialize(){
+        primerMixFlag = 1;
         currentState = 0;
         sessionActive = false;
         sessionStartTime = 0;
@@ -195,10 +196,10 @@ public class Controller {
             this.wellStatus.setText(String.format("Status: "));
         }
         else {
-            this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)));
+            this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)*primerMixFlag));
             this.wellPos.setText(String.format("Well Position: %s", outputSheet.getWellPosition(row, col)));
-            this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)));
-            this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)));
+            this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)*primerMixFlag));
+            this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)*primerMixFlag));
             this.measuredVol.setText(String.format("Measured Volume: %3.2f", outputSheet.getMeasuredVol(row, col)));
             this.wellStatus.setText(String.format("Status: %s", outputSheet.getResultsArray()[row][col].toString()));
         }
@@ -273,6 +274,8 @@ public class Controller {
     private void autoImportButton() throws IOException {
         if(currentState == 1) {
             File toImport = findMostRecentMeasuredData(importPath);
+            if(customerField.getText().contains("invitae") || this.customerField.getText().contains("Invitae"))
+                    primerMixFlag = 2;
             if(outputSheet.executePhaseTwo(toImport) == 0){
                 currentState = 2;
                 acceptButton.setStyle("");
@@ -342,6 +345,7 @@ public class Controller {
 
     @FXML
     public void resetAll() throws IOException {
+        primerMixFlag = 1;
         outputSheet = new OutputSheet();
         outputSheet.initializeWellStates();
         setStatusOfWells();

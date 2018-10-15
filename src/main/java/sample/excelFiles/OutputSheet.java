@@ -358,6 +358,9 @@ public class OutputSheet {
         this.importPath = importPath;
     }
 
+    public void primaryMixAdjust(){
+    }
+
     public void setSsrsReportPath(String ssrsReportPath){
         this.ssrsReportPath = ssrsReportPath;
     }
