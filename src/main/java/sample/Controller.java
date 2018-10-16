@@ -27,8 +27,7 @@ import static javafx.scene.paint.Color.BLACK;
 
 /**    TODO:
 /*  Add/Remove Menu functions
-    Fix bug wiht Invitae Plates
-    Is file filter working for most recent import?
+
  **/
 
 public class Controller {
@@ -272,7 +271,7 @@ public class Controller {
 
     @FXML
     private void autoImportButton() throws IOException {
-        if(currentState == 1) {
+        if(currentState == 1 || currentState == 2) {
             File toImport = findMostRecentMeasuredData(importPath);
             if(customerField.getText().contains("invitae") || this.customerField.getText().contains("Invitae"))
                     primerMixFlag = 2;
@@ -364,7 +363,7 @@ public class Controller {
 
     @FXML
     public void manuallyImportData() throws IOException {
-        if(currentState == 1) {
+        if(currentState == 1 || currentState == 2) {
             FileChooser chooser = new FileChooser();
             File toImport = chooser.showOpenDialog(plateGrid.getScene().getWindow());
             if (toImport == null) {

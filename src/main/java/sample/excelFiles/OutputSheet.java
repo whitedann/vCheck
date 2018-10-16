@@ -215,11 +215,6 @@ public class OutputSheet {
         for(int i = 0; i < plateData.getPhysicalNumberOfRows() - 2; i++) {
             int col = Integer.parseInt(plateData.getRow(i + 2).getCell(0).getStringCellValue().substring(1)) - 1;
             int row = (int) wellMappings.get(plateData.getRow(i + 2).getCell(0).getStringCellValue().charAt(0)) - 1;
-            /**                         /
-             * TODO CHANGE STUFF HERE   /
-             *                          /
-             *                          /
-             *                          **/
             targetVolumes[col][row] = dataTemplatePage.getRow(i).getCell(3).getNumericCellValue();
             highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
             lowEnds[col][row] = targetVolumes[col][row] * 0.95 - 10;
@@ -293,6 +288,8 @@ public class OutputSheet {
             int row = 1 / 12;
             if(targetVolumes[col][row] != 0){
                 targetVolumes[col][row] *= 2;
+                highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
+                lowEnds[col][row] = targetVolumes[col][row] * 0.95 - 10;
             }
         }
     }
@@ -351,7 +348,7 @@ public class OutputSheet {
         importPath = file.getAbsolutePath();
         if(loadMeasuredDataAndMerge() == 0){
             if(primerMixFlag == 2)
-                primaryMixAdjust();
+                primerMixAdjust();
             updateWellStates();
             return 0;
         }
@@ -372,9 +369,6 @@ public class OutputSheet {
 
     public void setImportPath(String importPath) {
         this.importPath = importPath;
-    }
-
-    public void primaryMixAdjust(){
     }
 
     public void setSsrsReportPath(String ssrsReportPath){
