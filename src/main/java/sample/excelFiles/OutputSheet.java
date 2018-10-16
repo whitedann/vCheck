@@ -215,6 +215,11 @@ public class OutputSheet {
         for(int i = 0; i < plateData.getPhysicalNumberOfRows() - 2; i++) {
             int col = Integer.parseInt(plateData.getRow(i + 2).getCell(0).getStringCellValue().substring(1)) - 1;
             int row = (int) wellMappings.get(plateData.getRow(i + 2).getCell(0).getStringCellValue().charAt(0)) - 1;
+            /**                         /
+             * TODO CHANGE STUFF HERE   /
+             *                          /
+             *                          /
+             *                          **/
             targetVolumes[col][row] = dataTemplatePage.getRow(i).getCell(3).getNumericCellValue();
             highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
             lowEnds[col][row] = targetVolumes[col][row] * 0.95 - 10;
@@ -282,6 +287,16 @@ public class OutputSheet {
         }
     }
 
+    public void primerMixAdjust(){
+        for(int i = 0; i < 96; i++){
+            int col = i % 12;
+            int row = 1 / 12;
+            if(targetVolumes[col][row] != 0){
+                targetVolumes[col][row] *= 2;
+            }
+        }
+    }
+
     private void saveFinalSheet(String barcode, String customer) throws IOException {
         if(customer == ""){
             customer = "NoCustomerSpecified";
@@ -332,10 +347,11 @@ public class OutputSheet {
         initializeWellStates();
     }
 
-    /** Overloaded function for manual import **/
-    public int executePhaseTwo(File file) throws IOException {
+    public int executePhaseTwo(File file, int primerMixFlag) throws IOException {
         importPath = file.getAbsolutePath();
         if(loadMeasuredDataAndMerge() == 0){
+            if(primerMixFlag == 2)
+                primaryMixAdjust();
             updateWellStates();
             return 0;
         }

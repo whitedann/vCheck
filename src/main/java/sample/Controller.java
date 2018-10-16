@@ -276,7 +276,7 @@ public class Controller {
             File toImport = findMostRecentMeasuredData(importPath);
             if(customerField.getText().contains("invitae") || this.customerField.getText().contains("Invitae"))
                     primerMixFlag = 2;
-            if(outputSheet.executePhaseTwo(toImport) == 0){
+            if(outputSheet.executePhaseTwo(toImport, primerMixFlag) == 0){
                 currentState = 2;
                 acceptButton.setStyle("");
                 setStatusOfWells();
@@ -371,7 +371,7 @@ public class Controller {
                 return;
             }
             else{
-                if(outputSheet.executePhaseTwo(toImport) == 0) {
+                if(outputSheet.executePhaseTwo(toImport, primerMixFlag) == 0) {
                     acceptButton.setStyle("");
                     setStatusOfWells();
                     currentState = 2;
