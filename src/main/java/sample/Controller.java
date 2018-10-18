@@ -21,6 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static javafx.scene.paint.Color.BLACK;
@@ -67,6 +69,7 @@ public class Controller {
     private Text sessionText = new Text("Current Session: \nNone");
     private Circle focusImage = new Circle(0,0,0);
     private Circle[][] wells = new Circle[12][8];
+    private static Map<Integer, Character> wellRows = new HashMap<>();
 
     /** Data **/
     private OutputSheet outputSheet;
@@ -105,10 +108,36 @@ public class Controller {
                         "-fx-background-color: lightgrey;" +
                         "-fx-border-color: darkgrey;" +
                         "-fx-text-fill: darkgrey");
+        wellRows.put(0, 'A');
+        wellRows.put(1, 'B');
+        wellRows.put(2, 'C');
+        wellRows.put(3, 'D');
+        wellRows.put(4, 'E');
+        wellRows.put(5, 'F');
+        wellRows.put(6, 'G');
+        wellRows.put(7, 'H');
 
 
 
         /** Adds plate/well graphic and function **/
+
+        /**Well Labels **/
+        for(int i = 0; i < wells[0].length; i++){
+            Text text = new Text();
+            text.setStyle("-fx-translate-y:" + (i*44 + 30) + ";" +
+                    "-fx-translate-x: -15");
+            text.setText(String.valueOf(wellRows.get(i)));
+            plateGrid.getChildren().add(text);
+        }
+        for(int i = 0; i < wells.length; i++){
+            Text text = new Text();
+            text.setStyle("-fx-translate-x:" + (i*44 + 17) + ";" +
+                    "-fx-translate-y: -5");
+            text.setText(String.valueOf(i+1));
+            plateGrid.getChildren().add(text);
+        }
+
+        /**Well graphics **/
         for(int j = 0; j < wells[0].length; j++) {
             for(int i = 0; i < wells.length; i++) {
                 Circle newCircle = new Circle(44 * i + 24, 44*j + 24, 21);
@@ -124,6 +153,8 @@ public class Controller {
                 plateGrid.getChildren().add(wells[i][j]);
             }
         }
+
+        /** Add focus **/
         plateGrid.getChildren().add(focusImage);
     }
 
@@ -243,7 +274,7 @@ public class Controller {
     private void loadPlateButton() throws IOException {
         if((System.currentTimeMillis() - sessionStartTime) > timeOutTimeInMillis){
             sessionActive = false;
-            sessionText.setText("Current Session: \nNo one!");
+            sessionText.setText("Current Session: \nNone");
         }
         boolean numeric = true;
         int input = 0;
@@ -293,7 +324,15 @@ public class Controller {
 
         if(lastFilePath.isPresent()) {
             System.out.println("Using File: " + lastFilePath.toString());
-            return (new File(String.valueOf(lastFilePath.get())));
+            File file = new File(String.valueOf(lastFilePath.get()));
+            if(System.currentTimeMillis() - file.lastModified() > 1000*180){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Warning! Most recent scan data is from more than 3 minutes ago! \n" +
+                        "Are you sure you saved the most recent scan?");
+                alert.setTitle("Old Data Warning");
+                alert.showAndWait();
+            }
+            return file;
         }
         else
             return null;
