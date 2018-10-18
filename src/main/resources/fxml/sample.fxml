@@ -43,8 +43,8 @@
                <Button fx:id="loadButton" onAction="#loadPlateButton" translateY="5" translateX="10" text="Load"/>
                <Button fx:id="clearButton" onAction="#resetAll" translateY="5" translateX="15" text="Clear" />
             </HBox>
-            <Button fx:id="importButton" onAction="#autoImportButton" mnemonicParsing="false" translateY="250" translateX="12" text="Import Most&#10;Recent Scan" />
-            <Button fx:id="acceptButton" onAction="#acceptAndSaveButton" translateY="255" translateX="10" mnemonicParsing="false" text="Accept &amp; Save" />
+            <Button fx:id="importButton" onAction="#autoImportButton" mnemonicParsing="false" translateY="250" translateX="25" text="Import Most&#10;Recent Scan" />
+            <Button fx:id="acceptButton" onAction="#acceptAndSaveButton" translateY="255" translateX="14" mnemonicParsing="false" text="Accept &amp; Save" />
          </children>
       </VBox>
    </left>
