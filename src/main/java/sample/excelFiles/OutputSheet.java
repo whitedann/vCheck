@@ -33,17 +33,18 @@ import java.util.List;
 import java.util.Map;
 
 public class OutputSheet {
-    /**
+
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-     **/
 
+    /**
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
+     **/
 
     private String importPath, ssrsReportPath, templatePath, savePath;
     private static Map wellMappings = new HashMap<Character, Integer>();
@@ -160,6 +161,7 @@ public class OutputSheet {
     }
 
     private int downloadSSRSReport(String barcode) throws IOException {
+        /**
         try {
             URL link = new URL(
                     "http",
@@ -177,11 +179,12 @@ public class OutputSheet {
             alert.showAndWait();
             return 1;
         }
+         **/
 
         /**add check here to delete output file if it is below certain size please and thank you
          * Also should probably have the function return 1 if it does ... **/
         try {
-            plateVolumeInfo = new HSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xls")))));
+            plateVolumeInfo = new XSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xlsx")))));
             plateData = plateVolumeInfo.getSheetAt(0);
         } catch (NotOLE2FileException e) {
             System.out.println("Failed to download SSRS report OR File type is .xlsx instead of .xls");
@@ -197,10 +200,13 @@ public class OutputSheet {
 
     private void mergeTemplateWithSSRSReport(){
         dataTemplatePage.setForceFormulaRecalculation(true);
-        for(int i = 2; i < plateData.getPhysicalNumberOfRows()+2; i++){
+        for(int i = 2; i < plateData.getPhysicalNumberOfRows(); i++){
+            if(i >= 99){
+                dataTemplatePage.createRow(i-2);
+            }
             for(int j = 1; j <= 4; j++) {
                 /** Creates cells in template if they do not exist **/
-                if(dataTemplatePage.getRow(i-2).getCell(0) == null){
+                if(i >= 99){
                     dataTemplatePage.getRow(i-2).createCell(0);
                     dataTemplatePage.getRow(i-2).createCell(j);
                 }
@@ -283,6 +289,7 @@ public class OutputSheet {
     }
 
     public void primerMixAdjust(){
+        System.out.println("adjusting for invitae");
         for(int i = 0; i < 96; i++){
             int col = i % 12;
             int row = 1 / 12;
