@@ -308,6 +308,7 @@ public class Controller {
                     primerMixFlag = 2;
             if(outputSheet.executePhaseTwo(toImport, primerMixFlag) == 0){
                 currentState = 2;
+                System.out.println(primerMixFlag);
                 acceptButton.setStyle("");
                 setStatusOfWells();
             }
