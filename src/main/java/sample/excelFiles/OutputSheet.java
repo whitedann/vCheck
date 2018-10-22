@@ -197,7 +197,7 @@ public class OutputSheet {
 
     private void mergeTemplateWithSSRSReport(){
         dataTemplatePage.setForceFormulaRecalculation(true);
-        for(int i = 2; i < plateData.getPhysicalNumberOfRows(); i++){
+        for(int i = 2; i < plateData.getPhysicalNumberOfRows()+2; i++){
             for(int j = 1; j <= 4; j++) {
                 /** Creates cells in template if they do not exist **/
                 if(dataTemplatePage.getRow(i-2).getCell(0) == null){
