@@ -39,13 +39,12 @@ public class OutputSheet {
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SAVE_PATH = "/Users/dwhite/vCheck1.1";
-     **/
+    **/
 
     private static final String DEFAULT_IMPORT_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Results\\";
     private static final String DEFAULT_SSRSREPORT_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_TEMPLATE_PATH = "W:\\\\Employees\\Danny\\dev\\";
     private static final String DEFAULT_SAVE_PATH = "W:\\\\Manufacturing\\VolumeCheck\\Final Excel Results\\";
-
     private String importPath, ssrsReportPath, templatePath, savePath;
     private static Map wellMappings = new HashMap<Character, Integer>();
 
@@ -290,7 +289,8 @@ public class OutputSheet {
         System.out.println("adjusting for invitae");
         for(int i = 0; i < 96; i++){
             int col = i % 12;
-            int row = 1 / 12;
+            int row = i / 12;
+            System.out.println(targetVolumes[col][row]);
             if(targetVolumes[col][row] != 0){
                 targetVolumes[col][row] *= 2;
                 highEnds[col][row] = targetVolumes[col][row] * 1.05 + 10;
@@ -341,19 +341,19 @@ public class OutputSheet {
         return lowEnds[col][row];
     }
 
-    public void executePhaseOne(String user, String barcode) throws IOException {
+    public void executePhaseOne(String user, String barcode, int primerMixFlag) throws IOException {
         initializeTemplateFile(user, barcode);
         if(downloadSSRSReport(barcode) == 0) {
             mergeTemplateWithSSRSReport();
+            if(primerMixFlag == 2)
+                primerMixAdjust();
         }
         initializeWellStates();
     }
 
-    public int executePhaseTwo(File file, int primerMixFlag) throws IOException {
+    public int executePhaseTwo(File file) throws IOException {
         importPath = file.getAbsolutePath();
         if(loadMeasuredDataAndMerge() == 0){
-            if(primerMixFlag == 2)
-                primerMixAdjust();
             updateWellStates();
             return 0;
         }

@@ -226,10 +226,10 @@ public class Controller {
             this.wellStatus.setText(String.format("Status: "));
         }
         else {
-            this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)*primerMixFlag));
+            this.targetVol.setText(String.format("Target Volume: %3.2f", outputSheet.getTargetVolume(row, col)));
             this.wellPos.setText(String.format("Well Position: %s", outputSheet.getWellPosition(row, col)));
-            this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)*primerMixFlag));
-            this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)*primerMixFlag));
+            this.upThresh.setText(String.format("Upper Threshold: %3.2f", outputSheet.getUpperThreshold(row, col)));
+            this.lowThresh.setText(String.format("Lower Threshold: %3.2f", outputSheet.getLowerThreshold(row, col)));
             this.measuredVol.setText(String.format("Measured Volume: %3.2f", outputSheet.getMeasuredVol(row, col)));
             this.wellStatus.setText(String.format("Status: %s", outputSheet.getResultsArray()[row][col].toString()));
         }
@@ -292,7 +292,10 @@ public class Controller {
                 sessionText.setText("Current Session: \n" +  currentUser);
                 sessionActive = true;
                 sessionStartTime = System.currentTimeMillis();
-                outputSheet.executePhaseOne(currentUser, String.valueOf(input));
+                if(customerField.getText().contains("invitae") || this.customerField.getText().contains("Invitae")){
+                    primerMixFlag = 2;
+                }
+                outputSheet.executePhaseOne(currentUser, String.valueOf(input), primerMixFlag);
                 setStatusOfWells();
                 currentState = 1;
                 importButton.setStyle("");
@@ -304,11 +307,8 @@ public class Controller {
     private void autoImportButton() throws IOException {
         if(currentState == 1 || currentState == 2) {
             File toImport = findMostRecentMeasuredData(importPath);
-            if(customerField.getText().contains("invitae") || this.customerField.getText().contains("Invitae"))
-                    primerMixFlag = 2;
-            if(outputSheet.executePhaseTwo(toImport, primerMixFlag) == 0){
+            if(outputSheet.executePhaseTwo(toImport) == 0){
                 currentState = 2;
-                System.out.println(primerMixFlag);
                 acceptButton.setStyle("");
                 setStatusOfWells();
             }
@@ -351,7 +351,6 @@ public class Controller {
                     "-fx-background-color: lightgrey; " +
                             "-fx-border-color: darkgrey; " +
                             "-fx-text-fill: darkgrey");
-            currentState = 0;
             resetAll();
         }
     }
@@ -410,7 +409,7 @@ public class Controller {
                 return;
             }
             else{
-                if(outputSheet.executePhaseTwo(toImport, primerMixFlag) == 0) {
+                if(outputSheet.executePhaseTwo(toImport) == 0) {
                     acceptButton.setStyle("");
                     setStatusOfWells();
                     currentState = 2;
