@@ -27,10 +27,6 @@ import java.util.Optional;
 
 import static javafx.scene.paint.Color.BLACK;
 
-/**    TODO:
-/*  Add/Remove Menu functions
-
- **/
 
 public class Controller {
 
@@ -81,10 +77,11 @@ public class Controller {
     private String currentUser, currentPassword;
     private int currentState, primerMixFlag;
 
+    /** Session time out interval **/
     private static final int timeOutTimeInMillis = 10*10000;
 
     @FXML
-    protected void initialize(){
+    private void initialize(){
         primerMixFlag = 1;
         currentState = 0;
         sessionActive = false;
@@ -158,6 +155,7 @@ public class Controller {
         plateGrid.getChildren().add(focusImage);
     }
 
+    /** Prompts users for login credentials **/
     @FXML
     private void queryLogin(){
         Dialog<Pair<String, String>> dialog = new Dialog<>();
@@ -207,6 +205,8 @@ public class Controller {
         });
     }
 
+    /** Validates log in by checking to see if a template file was successfully downloaded **/
+    /** @return int (0 success, 1 fail) **/
     private int validateLogin() {
         try {
             return outputSheet.downloadTemplate(currentUser, currentPassword);
@@ -216,6 +216,10 @@ public class Controller {
         return 1;
     }
 
+    /** Sets the clicked well as the focus, and updates shown data **/
+    /** @param row
+     * @param col index of well
+     */
     private void setFocus(int row, int col) {
         if(this.outputSheet == null){
             this.targetVol.setText(String.format("Target Volume:"));
@@ -239,6 +243,7 @@ public class Controller {
         focusImage.setStyle("-fx-fill: darkorange");
     }
 
+    /** Updates the visual status of the wells, after the data has been imported **/
     @FXML
     private void setStatusOfWells() throws IOException {
         if(outputSheet.getResultsArray() == null){
@@ -270,6 +275,10 @@ public class Controller {
         }
     }
 
+    /** Called after the target data has been imported, to show the user that
+     * it is awaiting an import of measured data.
+     * @throws IOException
+     */
     @FXML
     private void loadPlateButton() throws IOException {
         if((System.currentTimeMillis() - sessionStartTime) > timeOutTimeInMillis){
@@ -303,6 +312,10 @@ public class Controller {
         }
     }
 
+    /** Auto-imports the most recently saved measured data by calling
+     *  findMostRecentMeasuredData()
+     * @throws IOException
+     */
     @FXML
     private void autoImportButton() throws IOException {
         if(currentState == 1 || currentState == 2) {
@@ -315,6 +328,11 @@ public class Controller {
         }
     }
 
+    /** Finds the most recently saved measured data file and verifies that it is okay to use
+     * @param dir import directory to search in
+     * @return File to import
+     * @throws IOException
+     */
     private File findMostRecentMeasuredData(String dir) throws IOException {
         Path directory = Paths.get(dir);
 
@@ -339,6 +357,9 @@ public class Controller {
             return null;
     }
 
+    /** Accepts the output and save its to output directory
+     * @throws IOException
+     */
     @FXML
     private void acceptAndSaveButton() throws IOException {
         if(currentState == 2) {
@@ -381,6 +402,9 @@ public class Controller {
         outputSheet.setSavePath(savePath);
     }
 
+    /** resets the GUI and the OutputSheet object
+     * @throws IOException
+     */
     @FXML
     public void resetAll() throws IOException {
         primerMixFlag = 1;
@@ -400,6 +424,9 @@ public class Controller {
         customerField.setText("");
     }
 
+    /** Imports measured data from specified directory
+     * @throws IOException
+     */
     @FXML
     public void manuallyImportData() throws IOException {
         if(currentState == 1 || currentState == 2) {
@@ -424,6 +451,7 @@ public class Controller {
         stage.close();
     }
 
+    /** Destroys current session **/
     @FXML
     public void logout() {
        sessionActive = false;

@@ -35,6 +35,7 @@ import java.util.Map;
 public class OutputSheet {
 
     /**
+     * Test Directories
     private static final String DEFAULT_IMPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_SSRSREPORT_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
     private static final String DEFAULT_TEMPLATE_PATH = "/Users/dwhite/vCheck1.1/src/main/resources/assets/";
@@ -80,6 +81,12 @@ public class OutputSheet {
         states = new WellState[12][8];
     }
 
+    /** Downloads the template file from mastercontrol website **/
+    /** @param user username for post request
+     * @param pass password for post request
+     * @return int (0 success, 1 fail)
+     * @throws IOException
+     */
     public int downloadTemplate(String user, String pass) throws IOException {
         String url = "https://idtdna.mastercontrol.com/mc/login/index.cfm?action=login";
 
@@ -143,6 +150,13 @@ public class OutputSheet {
         return 0;
     }
 
+    /** Sets up template with initials and barcode **/
+    /** Also initializes workbook sheets to be edited later **/
+    /** @param user username to insert into excel sheet
+     * @param barcode plate barcode ID to insert into excel sheet
+     * @return int (0 success, 1 fail)
+     * @throws IOException
+     */
     private int initializeTemplateFile(String user, String barcode) throws IOException {
         File inputFile = new File(templatePath + "template.xlsx");
         try {
@@ -159,6 +173,11 @@ public class OutputSheet {
         return 0;
     }
 
+    /** Downloads SSRS Excel sheet from IDT intranet **/
+    /** @param barcode plate barcode ID for lookup
+     * @return int (0 success, 1 fail)
+     * @throws IOException
+     */
     private int downloadSSRSReport(String barcode) throws IOException {
         try {
             URL link = new URL(
@@ -173,13 +192,12 @@ public class OutputSheet {
             System.out.println("Failed to download SSRS report for barcde: " + barcode);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setContentText("Failed to download volume info from SSRS \nCheck the barcode maybe or something");
+            alert.setContentText("Failed to download volume info from SSRS \nCheck that the barcode was entered correctly.");
             alert.showAndWait();
             return 1;
         }
 
-        /**add check here to delete output file if it is below certain size please and thank you
-         * Also should probably have the function return 1 if it does ... **/
+        /**TODO: add check here to delete output file if it is below certain size **/
         try {
             plateVolumeInfo = new HSSFWorkbook(((new FileInputStream(new File(ssrsReportPath + "plateVol2.xls")))));
             plateData = plateVolumeInfo.getSheetAt(0);
@@ -195,6 +213,7 @@ public class OutputSheet {
         return 0;
     }
 
+    /** Merges the data from SSRS report excel sheet into template file **/
     private void mergeTemplateWithSSRSReport(){
         dataTemplatePage.setForceFormulaRecalculation(true);
         for(int i = 2; i < plateData.getPhysicalNumberOfRows(); i++){
@@ -225,6 +244,10 @@ public class OutputSheet {
         }
     }
 
+    /** Loads data excel file and merges into template file **/
+    /** @return int (0 success, 1 fail)
+     * @throws IOException
+     */
     private int loadMeasuredDataAndMerge() throws IOException {
         Reader reader;
         try {
@@ -258,6 +281,7 @@ public class OutputSheet {
         return 0;
     }
 
+    /**Initializes the states of the wells (Empty or No data) **/
     public void initializeWellStates(){
         for(int i = 0; i < 96; i++){
             int col = i % 12;
@@ -269,6 +293,7 @@ public class OutputSheet {
         }
     }
 
+    /** Called after data is merged, updates the states of wells to (Pass or Fail) **/
     public void updateWellStates(){
         for(int i = 0; i < 96; i++){
             int col = i % 12;
@@ -285,6 +310,9 @@ public class OutputSheet {
         }
     }
 
+    /** Workaround for Invitae customer spec issues **/
+    /** If this is called, the target volumes are multiplied by 2 to
+     * accommodate for the halved volume from the SSRS report **/
     public void primerMixAdjust(){
         System.out.println("adjusting for invitae");
         for(int i = 0; i < 96; i++){
@@ -299,6 +327,11 @@ public class OutputSheet {
         }
     }
 
+    /** Saves the completed excel cheet to file **/
+    /** @param barcode for file name save
+     * @param customer for file name save
+     * @throws IOException
+     */
     private void saveFinalSheet(String barcode, String customer) throws IOException {
         if(customer == ""){
             customer = "NoCustomerSpecified";
@@ -310,6 +343,7 @@ public class OutputSheet {
         outputStream.close();
     }
 
+    /** Clears all attributes of the output sheet **/
     public void clearData(){
         states = new WellState[12][8];
         targetVolumes = new double[12][8];
@@ -321,26 +355,13 @@ public class OutputSheet {
         System.out.println("Data has been reset");
     }
 
-    public WellState[][] getResultsArray(){
-        return this.states;
-    }
-
-    public String getWellPosition(int col, int row){
-        return wellPositions[col][row];
-    }
-
-    public double getTargetVolume(int col, int row){
-        return targetVolumes[col][row];
-    }
-
-    public double getUpperThreshold(int col, int row){
-        return highEnds[col][row];
-    }
-
-    public double getLowerThreshold(int col, int row){
-        return lowEnds[col][row];
-    }
-
+    /** Initializes template, downloads SSRS report and merges the two together
+     * Adjusts for Invitae spec if necessary.
+     * @param user input username
+     * @param barcode input plate barcodeID
+     * @param primerMixFlag invitae mix flag
+     * @throws IOException
+     */
     public void executePhaseOne(String user, String barcode, int primerMixFlag) throws IOException {
         initializeTemplateFile(user, barcode);
         if(downloadSSRSReport(barcode) == 0) {
@@ -351,6 +372,12 @@ public class OutputSheet {
         initializeWellStates();
     }
 
+    /** Merges measurement data with output file
+     * then updates the wellstates
+     * @param file path to import data.
+     * @return 1 for fail, 0 for success
+     * @throws IOException
+     */
     public int executePhaseTwo(File file) throws IOException {
         importPath = file.getAbsolutePath();
         if(loadMeasuredDataAndMerge() == 0){
@@ -363,27 +390,65 @@ public class OutputSheet {
         }
     }
 
+    /** Saves the output file to desired directory and clears the sheet
+     *
+     * @param barcode input plate barcode ID
+     * @param customer input plate customer
+     * @throws IOException
+     */
     public void executePhaseThree(String barcode, String customer) throws IOException {
         saveFinalSheet(barcode, customer);
         clearData();
     }
 
+    /** @return an array of the well states  (Pass, Fail, NoData, Empty)**/
+    public WellState[][] getResultsArray(){
+        return this.states;
+    }
+
+    /** @param column,
+     * @param row index of well **/
+    /** @return well position of index **/
+    public String getWellPosition(int col, int row){
+        return wellPositions[col][row];
+    }
+
+    /** @param column,
+     *  @param row index of well **/
+    /** @return target volume of well **/
+    public double getTargetVolume(int col, int row){
+        return targetVolumes[col][row];
+    }
+
+    /** @param column,
+     *  @param row index of well **/
+    /** @return maximum volume of well **/
+    public double getUpperThreshold(int col, int row){
+        return highEnds[col][row];
+    }
+
+    /** @param column,
+     *  @param row index of well **/
+    /** @return minimum volume of well **/
+    public double getLowerThreshold(int col, int row){
+        return lowEnds[col][row];
+    }
+
+    /** @param column,
+     *  @param row index of well **/
+    /** @return measured volume of well **/
     public Double getMeasuredVol(int col, int row) {
         return measuredData[col][row];
     }
 
+    /** Sets path of measured data **/
+    /** @param importPath path of measured data file **/
     public void setImportPath(String importPath) {
         this.importPath = importPath;
     }
 
-    public void setSsrsReportPath(String ssrsReportPath){
-        this.ssrsReportPath = ssrsReportPath;
-    }
-
-    public void setTemplatePath(String templatePath){
-        this.templatePath = templatePath;
-    }
-
+    /** Sets path of measured data **/
+    /** @param savePath path to save file **/
     public void setSavePath(String savePath) {
         this.savePath = savePath;
     }
